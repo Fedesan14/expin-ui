@@ -1,0 +1,114 @@
+import styled from 'styled-components'
+
+export const AuthLayout = styled.section`
+  display: grid;
+  place-items: start center;
+`
+
+export const AuthPanel = styled.div`
+  width: min(100%, 440px);
+  padding: ${({ theme }) => theme.spacing.lg};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radii.md};
+  background: ${({ theme }) => theme.colors.surface};
+  box-shadow: ${({ theme }) => theme.shadows.soft};
+  display: grid;
+  gap: ${({ theme }) => theme.spacing.lg};
+`
+
+export const Form = styled.form`
+  display: grid;
+  gap: ${({ theme }) => theme.spacing.md};
+`
+
+export const Field = styled.label`
+  display: grid;
+  gap: ${({ theme }) => theme.spacing.xs};
+  color: ${({ theme }) => theme.colors.text};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-weight: 800;
+`
+
+export const Input = styled.input`
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radii.md};
+  background: ${({ theme }) => theme.colors.surface};
+  color: ${({ theme }) => theme.colors.text};
+  padding: 0 ${({ theme }) => theme.spacing.md};
+
+  &:focus {
+    border-color: ${({ theme }) => theme.colors.focus};
+    outline: 3px solid rgba(43, 108, 176, 0.16);
+  }
+`
+
+export const ErrorText = styled.span`
+  color: ${({ theme }) => theme.colors.danger};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  font-weight: 800;
+`
+
+export const SubmitButton = styled.button`
+  min-height: 50px;
+  border: 0;
+  border-radius: ${({ theme }) => theme.radii.md};
+  background: ${({ theme }) => theme.colors.primary};
+  color: ${({ theme }) => theme.colors.surface};
+  font-weight: 900;
+
+  &:hover:not(:disabled) {
+    background: ${({ theme }) => theme.colors.primaryHover};
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.64;
+  }
+`
+
+export const SwitchPrompt = styled.p`
+  margin: 0;
+  color: ${({ theme }) => theme.colors.textMuted};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  text-align: center;
+`
+
+export const StatusMessage = styled.p<{ $tone: 'danger' | 'success' }>`
+  margin: 0;
+  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
+  border-radius: ${({ theme }) => theme.radii.md};
+  background: ${({ $tone }) =>
+    $tone === 'success' ? 'rgba(47, 125, 89, 0.1)' : 'rgba(180, 60, 60, 0.1)'};
+  color: ${({ $tone, theme }) =>
+    $tone === 'success' ? theme.colors.success : theme.colors.danger};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-weight: 800;
+`
+
+export const SessionPanel = styled.div`
+  display: grid;
+  gap: ${({ theme }) => theme.spacing.sm};
+  padding: ${({ theme }) => theme.spacing.md};
+  border-radius: ${({ theme }) => theme.radii.md};
+  background: ${({ theme }) => theme.colors.surfaceAlt};
+`
+
+export const SessionText = styled.p`
+  margin: 0;
+  color: ${({ theme }) => theme.colors.textMuted};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  overflow-wrap: anywhere;
+`
+
+export const SecondaryButton = styled.button`
+  width: max-content;
+  min-height: 40px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radii.md};
+  background: ${({ theme }) => theme.colors.surface};
+  color: ${({ theme }) => theme.colors.primary};
+  padding: 0 ${({ theme }) => theme.spacing.md};
+  font-weight: 800;
+`

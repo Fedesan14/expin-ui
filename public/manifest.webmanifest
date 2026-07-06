@@ -1,0 +1,21 @@
+{
+  "name": "Expin",
+  "short_name": "Expin",
+  "description": "SuperApp financiera para registrar gastos, ingresos y dividir gastos compartidos.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f7f8f5",
+  "theme_color": "#216869",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["finance", "productivity", "utilities"],
+  "lang": "es-AR"
+}
