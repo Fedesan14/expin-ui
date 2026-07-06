@@ -1,7 +1,8 @@
-import { createBrowserRouter } from 'react-router-dom'
+import { Navigate, createBrowserRouter } from 'react-router-dom'
 import { AppShell } from '../../slices/common/components/AppShell'
+import { LoginPage } from '../../slices/auth/pages/LoginPage'
+import { SignupPage } from '../../slices/auth/pages/SignupPage'
 import { HomePage } from '../../slices/common/pages/HomePage'
-import { AuthPage } from '../../slices/auth/pages/AuthPage'
 import { EventsPage } from '../../slices/events/pages/EventsPage'
 import { ExpenseHistoryPage } from '../../slices/expense-history/pages/ExpenseHistoryPage'
 
@@ -12,6 +13,18 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
+        element: <LoginPage />,
+      },
+      {
+        path: 'login',
+        element: <LoginPage />,
+      },
+      {
+        path: 'registro',
+        element: <SignupPage />,
+      },
+      {
+        path: 'home',
         element: <HomePage />,
       },
       {
@@ -24,7 +37,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'auth',
-        element: <AuthPage />,
+        element: <Navigate to="/login" replace />,
       },
     ],
   },

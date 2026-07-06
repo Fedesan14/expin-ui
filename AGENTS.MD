@@ -16,6 +16,8 @@ Expin is a SuperApp with several finance-oriented modules. Current planned modul
 
 - React with Vite and TypeScript.
 - `react-router-dom` owns client-side routing.
+- `react-hook-form` owns form state and submit handling.
+- Yup schemas, connected through `@hookform/resolvers`, own form validation.
 - PWA metadata lives in `public/manifest.webmanifest`.
 - The app registers `public/service-worker.js` from `src/app/pwa/registerServiceWorker.ts` outside development.
 - RTK Query is the global remote-state layer and HTTP client.
@@ -55,6 +57,8 @@ Rules:
 - `common` is only for reusable application pieces that are not owned by a business feature.
 - Feature slices own their API endpoints, domain types, hooks, pages, and components when those pieces are specific to that feature.
 - Feature pages live inside their owning slice under `pages/`.
+- Keep features highly cohesive: pages, hooks, components, and helpers should own one clear behavior. Split flows into separate routes/pages when their logic diverges, such as login and signup.
+- Use `react-hook-form` with Yup schemas for forms; keep schemas in the owning feature slice, usually under `model/`.
 - Prefer importing across slices through explicit public exports when a slice grows enough to need them.
 - Do not place feature-specific UI or API contracts in `common`.
 - Keep RTK Query endpoint injection inside the feature slice, using `baseApi.injectEndpoints`.
@@ -65,8 +69,22 @@ Rules:
 - Use `baseApi` from `src/app/api/baseApi.ts` for all HTTP endpoints.
 - Configure backend URL with `VITE_API_BASE_URL`; the local fallback is `http://localhost:8080`.
 - Add tag types in `baseApi` when a new cache domain is introduced.
+- `baseApi` reads `state.auth.sessionToken` and sends `Authorization: Bearer <sessionToken>` for private endpoints; public auth endpoints must opt out by endpoint name when needed.
 - Prefer server state in RTK Query over duplicating remote data in local Redux slices.
 - Add local Redux slices only for client-only state that does not belong to a component.
+
+## Auth
+
+- The auth feature is owned by `src/slices/auth`.
+- Signup uses `POST /auth/signup` with JSON body `{ username, password, email }`.
+- Login uses `POST /auth/login` without a body and with `Authorization: Basic <base64(identifier:password)>`; `identifier` can be username or email.
+- Successful login returns `sessionToken`, `sessionTokenExpiresAt`, `refreshToken`, and `refreshTokenExpiresAt`.
+- Store auth tokens in the local `auth` Redux slice through `src/slices/auth/model/authSlice.ts`; do not duplicate the token in RTK Query cache state.
+- After login, private backend calls should receive `Authorization: Bearer <sessionToken>` from `baseApi`.
+- Signup responses must be typed without `password`.
+- Login and signup must remain separate pages with separate route-level logic: `LoginPage` owns login and `SignupPage` owns registration.
+- Auth form validation schemas live in `src/slices/auth/model/schemas.ts`.
+- After a successful login, navigate to `/home`.
 
 ## Routing
 
@@ -74,7 +92,8 @@ Rules:
 - Use `react-router-dom` primitives (`RouterProvider`, `createBrowserRouter`, `Link`, `NavLink`, `Outlet`) for navigation.
 - `AppShell` is the shared route layout and renders child pages through `Outlet`.
 - Each feature route should render a page owned by that feature slice.
-- Keep route paths in Spanish when they are user-facing, for example `/historial` and `/eventos`.
+- The root path `/` should render the login flow directly, not a generic landing/home page.
+- Keep route paths in Spanish when they are user-facing, for example `/historial`, `/eventos`, and `/registro`.
 
 ## Styling
 
@@ -93,6 +112,7 @@ Rules:
 - If a new durable convention is introduced, update this file in the same session.
 - If a feature is added, document its slice ownership and any API contracts that future agents must preserve.
 - Run available validation commands before finishing when practical, and report any command that could not be run.
+- Do not start the Vite dev server or otherwise try to launch the project; the user keeps it running on port `5173`.
 
 ## Current Base
 
@@ -101,6 +121,7 @@ Rules:
 - `src/main.tsx` registers the service worker outside development.
 - `index.html` links the web app manifest and mobile app metadata.
 - `App.tsx` renders `RouterProvider` with the route tree from `src/app/router/routes.tsx`.
-- Initial routes exist for `/`, `/historial`, `/eventos`, and `/auth`.
-- `auth`, `events`, and `expense-history` have initial RTK Query endpoint files and model types.
-- The home page lives in `src/slices/common/pages/HomePage`.
+- Initial routes exist for `/`, `/login`, `/registro`, `/home`, `/historial`, `/eventos`, and `/auth`.
+- `auth`, `events`, and `expense-history` have RTK Query endpoint files and model types.
+- `/` and `/login` render `LoginPage`; `/registro` renders `SignupPage`; `/auth` redirects to `/login`.
+- `/home` renders the home page from `src/slices/common/pages/HomePage`.

@@ -1,5 +1,17 @@
 import { baseApi } from '../../../app/api/baseApi'
-import type { LoginRequest, LoginResponse, UserSession } from '../model/types'
+import type {
+  LoginRequest,
+  LoginResponse,
+  SignupRequest,
+  SignupResponse,
+} from '../model/types'
+
+function toBasicAuthorization({ identifier, password }: LoginRequest) {
+  const token = new TextEncoder().encode(`${identifier}:${password}`)
+  const binary = String.fromCodePoint(...token)
+
+  return `Basic ${btoa(binary)}`
+}
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -7,15 +19,26 @@ export const authApi = baseApi.injectEndpoints({
       query: (credentials) => ({
         url: '/auth/login',
         method: 'POST',
-        body: credentials,
+        headers: {
+          Authorization: toBasicAuthorization(credentials),
+        },
       }),
       invalidatesTags: ['Auth'],
     }),
-    getCurrentUser: builder.query<UserSession, void>({
+    signup: builder.mutation<SignupResponse, SignupRequest>({
+      query: (user) => ({
+        url: '/auth/signup',
+        method: 'POST',
+        body: user,
+      }),
+      invalidatesTags: ['Auth'],
+    }),
+    getCurrentUser: builder.query<SignupResponse, void>({
       query: () => '/auth/me',
       providesTags: ['Auth'],
     }),
   }),
 })
 
-export const { useGetCurrentUserQuery, useLoginMutation } = authApi
+export const { useGetCurrentUserQuery, useLoginMutation, useSignupMutation } =
+  authApi

@@ -39,7 +39,7 @@ export function HomePage() {
         <FeatureCard
           id="auth"
           eyebrow="Auth"
-          title="Identidad y sesion"
+          title="Identidad y sesión"
           description="Slice preparado para login, usuario actual y crecimiento de permisos."
           highlights={['Login por API', 'Sesion de usuario', 'Contratos tipados']}
         />
