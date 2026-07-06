@@ -41,6 +41,7 @@ src/
   slices/
     common/
       components/
+      icons/
     auth/
       api/
       model/
@@ -93,7 +94,7 @@ Rules:
 - Route definitions live in `src/app/router/routes.tsx`.
 - Use `react-router-dom` primitives (`RouterProvider`, `createBrowserRouter`, `Link`, `NavLink`, `Outlet`) for navigation.
 - Public auth routes render through `PublicLayout`; private module routes render through `PrivateLayout`.
-- `PrivateLayout` owns shared module navigation and renders child pages through `Outlet`; logged-out auth pages should not show module navigation.
+- `PrivateLayout` owns shared module navigation, the logout action, and renders child pages through `Outlet`; logged-out auth pages should not show module navigation.
 - Public and private route access is enforced with route guards in `src/app/router/RouteGuards.tsx`: unauthenticated users redirect to `/login`, and authenticated users redirect away from public auth pages to `/home`.
 - Each feature route should render a page owned by that feature slice.
 - The root path `/` should render the login flow directly, not a generic landing/home page.
@@ -107,6 +108,7 @@ Rules:
 - Use theme tokens for colors, spacing, typography, radii, and shadows.
 - Keep reusable styled primitives near their component.
 - Reusable design-system primitives such as buttons, inputs, form fields, layout helpers, feedback components, overlays, badges, and navigation pieces live under `src/slices/common/components`; adapt them there instead of recreating one-off versions inside feature slices.
+- Shared SVG icon components live under `src/slices/common/icons`; add icons there instead of depending on external icon libraries or inline SVG copies in feature code.
 - Cards should use a radius of `8px` unless a local design reason is documented.
 - Avoid one-color interfaces; Expin should feel clean, practical, and finance-oriented rather than decorative.
 
@@ -129,6 +131,7 @@ Rules:
 - `src/app/router/routes.tsx` separates public auth routes from private module routes with `PublicRoute`/`PublicLayout` and `PrivateRoute`/`PrivateLayout`.
 - `src/app/theme/theme.ts` includes compatibility tokens for the initial app (`spacing`, `fontSizes.xxl`, `shadows.soft`) plus expanded design-system tokens (`space`, `fontWeights`, `lineHeights`, `sizes`, `zIndex`, `breakpoints`, `transitions`, and `media` helpers).
 - Shared reusable UI primitives exist under `src/slices/common/components`, including button, text input, password input, form field, layout, navigation, feedback, overlay, badge, spinner, and status components.
+- Shared reusable SVG icons exist under `src/slices/common/icons`.
 - Current auth pages use the shared `FormField`, `TextInput`, `PasswordInput`, `Button`, `LinkButton`, `Alert`, and `Page` primitives instead of page-local input/button styling.
 - Initial routes exist for `/`, `/login`, `/registro`, `/home`, `/historial`, `/eventos`, and `/auth`.
 - `auth`, `events`, and `expense-history` have RTK Query endpoint files and model types.

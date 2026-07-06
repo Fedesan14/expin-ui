@@ -11,4 +11,10 @@ export const Shell = styled.div`
 
 export const Main = styled.main`
   width: 100%;
+  min-height: 100vh;
+  min-height: 100svh;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: ${({ theme }) => theme.space['4']};
 `

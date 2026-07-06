@@ -2,7 +2,8 @@ import styled from 'styled-components'
 
 export const AuthLayout = styled.section`
   display: grid;
-  place-items: start center;
+  place-items: center;
+  width: 100%;
 `
 
 export const AuthPanel = styled.div`

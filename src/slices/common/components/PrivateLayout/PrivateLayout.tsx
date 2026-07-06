@@ -1,46 +1,16 @@
-import type { SVGProps } from 'react'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
+import { useAppDispatch } from '../../../../app/store/hooks'
+import { clearSession } from '../../../auth/model/authSlice'
+import {
+  EventsIcon,
+  HistoryIcon,
+  HomeIcon,
+  LogOutIcon,
+} from '../../icons'
 import { BottomNavigation } from '../BottomNavigation'
 import { Header } from '../Header'
+import { IconButton } from '../IconButton'
 import * as S from './PrivateLayout.styles'
-
-function HomeIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" {...props}>
-      <path
-        d="M4 11.5 12 5l8 6.5V20h-5v-5H9v5H4v-8.5Z"
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-    </svg>
-  )
-}
-
-function HistoryIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" {...props}>
-      <path
-        d="M5 7h14M5 12h14M5 17h9"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeWidth="2"
-      />
-    </svg>
-  )
-}
-
-function EventsIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" {...props}>
-      <path
-        d="M7 8h10M7 12h10M9 4v3M15 4v3M6 6h12v14H6V6Z"
-        stroke="currentColor"
-        strokeLinejoin="round"
-        strokeWidth="2"
-      />
-    </svg>
-  )
-}
 
 const navItems = [
   { to: '/home', label: 'Home', icon: HomeIcon },
@@ -49,9 +19,28 @@ const navItems = [
 ]
 
 export function PrivateLayout() {
+  const dispatch = useAppDispatch()
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    dispatch(clearSession())
+    navigate('/login', { replace: true })
+  }
+
   return (
     <S.Shell>
-      <Header navItems={navItems} />
+      <Header
+        navItems={navItems}
+        actions={
+          <IconButton
+            icon={<LogOutIcon size={20} aria-hidden="true" />}
+            label="Cerrar sesion"
+            type="button"
+            variant="secondary"
+            onClick={handleLogout}
+          />
+        }
+      />
       <S.Main>
         <Outlet />
       </S.Main>

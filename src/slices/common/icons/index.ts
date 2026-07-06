@@ -1,0 +1,5 @@
+export { EventsIcon } from './EventsIcon'
+export { HistoryIcon } from './HistoryIcon'
+export { HomeIcon } from './HomeIcon'
+export { LogOutIcon } from './LogOutIcon'
+export type { IconProps } from './types'
