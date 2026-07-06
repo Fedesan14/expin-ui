@@ -1,7 +1,14 @@
 import { useState } from 'react'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import { Alert } from '../../../common/components/Alert'
+import { Button } from '../../../common/components/Button'
+import { FormField } from '../../../common/components/FormField'
+import { LinkButton } from '../../../common/components/LinkButton'
+import { Page } from '../../../common/components/Page'
+import { PasswordInput } from '../../../common/components/PasswordInput'
+import { TextInput } from '../../../common/components/TextInput'
 import { AuthForm as S } from '../../components/AuthForm'
 import { useSignupMutation } from '../../api/authApi'
 import { signupSchema } from '../../model/schemas'
@@ -67,58 +74,53 @@ export function SignupPage() {
   }
 
   return (
-    <S.AuthLayout>
-      <S.AuthPanel>
-        {message ? (
-          <S.StatusMessage $tone={message.tone}>{message.text}</S.StatusMessage>
-        ) : null}
+    <Page maxWidth="narrow">
+      <S.AuthLayout>
+        <S.AuthPanel>
+          {message ? <Alert tone={message.tone}>{message.text}</Alert> : null}
 
-        <S.Form onSubmit={handleSubmit(handleSignup)}>
-          <S.Field>
-            Usuario
-            <S.Input
-              autoComplete="username"
-              maxLength={30}
-              type="text"
-              {...register('username')}
-            />
-            {errors.username?.message ? (
-              <S.ErrorText>{errors.username.message}</S.ErrorText>
-            ) : null}
-          </S.Field>
-          <S.Field>
-            Email
-            <S.Input
-              autoComplete="email"
-              maxLength={255}
-              type="email"
-              {...register('email')}
-            />
-            {errors.email?.message ? (
-              <S.ErrorText>{errors.email.message}</S.ErrorText>
-            ) : null}
-          </S.Field>
-          <S.Field>
-            Contraseña
-            <S.Input
-              autoComplete="new-password"
-              maxLength={72}
-              minLength={8}
-              type="password"
-              {...register('password')}
-            />
-            {errors.password?.message ? (
-              <S.ErrorText>{errors.password.message}</S.ErrorText>
-            ) : null}
-          </S.Field>
-          <S.SubmitButton disabled={signupState.isLoading} type="submit">
-            {signupState.isLoading ? 'Creando cuenta...' : 'Crear cuenta'}
-          </S.SubmitButton>
-          <S.SwitchPrompt>
-            ¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link>
-          </S.SwitchPrompt>
-        </S.Form>
-      </S.AuthPanel>
-    </S.AuthLayout>
+          <S.Form onSubmit={handleSubmit(handleSignup)}>
+            <FormField label="Usuario" error={errors.username?.message} required>
+              <TextInput
+                autoComplete="username"
+                error={Boolean(errors.username)}
+                maxLength={30}
+                type="text"
+                {...register('username')}
+              />
+            </FormField>
+            <FormField label="Email" error={errors.email?.message} required>
+              <TextInput
+                autoComplete="email"
+                error={Boolean(errors.email)}
+                maxLength={255}
+                type="email"
+                {...register('email')}
+              />
+            </FormField>
+            <FormField
+              label="Contraseña"
+              error={errors.password?.message}
+              hint="Usa al menos 8 caracteres."
+              required
+            >
+              <PasswordInput
+                autoComplete="new-password"
+                error={Boolean(errors.password)}
+                maxLength={72}
+                minLength={8}
+                {...register('password')}
+              />
+            </FormField>
+            <Button fullWidth loading={signupState.isLoading} type="submit">
+              Crear cuenta
+            </Button>
+            <S.SwitchPrompt>
+              ¿Ya tienes cuenta? <LinkButton to="/login">Inicia sesión</LinkButton>
+            </S.SwitchPrompt>
+          </S.Form>
+        </S.AuthPanel>
+      </S.AuthLayout>
+    </Page>
   )
 }

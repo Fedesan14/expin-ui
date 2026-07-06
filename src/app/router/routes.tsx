@@ -1,5 +1,7 @@
 import { Navigate, createBrowserRouter } from 'react-router-dom'
-import { AppShell } from '../../slices/common/components/AppShell'
+import { PrivateRoute, PublicRoute } from './RouteGuards'
+import { PrivateLayout } from '../../slices/common/components/PrivateLayout'
+import { PublicLayout } from '../../slices/common/components/PublicLayout'
 import { LoginPage } from '../../slices/auth/pages/LoginPage'
 import { SignupPage } from '../../slices/auth/pages/SignupPage'
 import { HomePage } from '../../slices/common/pages/HomePage'
@@ -9,7 +11,11 @@ import { ExpenseHistoryPage } from '../../slices/expense-history/pages/ExpenseHi
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <AppShell />,
+    element: (
+      <PublicRoute>
+        <PublicLayout />
+      </PublicRoute>
+    ),
     children: [
       {
         index: true,
@@ -24,6 +30,19 @@ export const router = createBrowserRouter([
         element: <SignupPage />,
       },
       {
+        path: 'auth',
+        element: <Navigate to="/login" replace />,
+      },
+    ],
+  },
+  {
+    element: (
+      <PrivateRoute>
+        <PrivateLayout />
+      </PrivateRoute>
+    ),
+    children: [
+      {
         path: 'home',
         element: <HomePage />,
       },
@@ -36,9 +55,13 @@ export const router = createBrowserRouter([
         element: <EventsPage />,
       },
       {
-        path: 'auth',
-        element: <Navigate to="/login" replace />,
+        path: '*',
+        element: <Navigate to="/home" replace />,
       },
     ],
+  },
+  {
+    path: '*',
+    element: <Navigate to="/login" replace />,
   },
 ])

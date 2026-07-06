@@ -80,17 +80,21 @@ Rules:
 - Login uses `POST /auth/login` without a body and with `Authorization: Basic <base64(identifier:password)>`; `identifier` can be username or email.
 - Successful login returns `sessionToken`, `sessionTokenExpiresAt`, `refreshToken`, and `refreshTokenExpiresAt`.
 - Store auth tokens in the local `auth` Redux slice through `src/slices/auth/model/authSlice.ts`; do not duplicate the token in RTK Query cache state.
+- Auth state is hydrated from `localStorage` through `src/slices/auth/model/authStorage.ts` and synchronized from the Redux store so sessions survive page refreshes while valid.
 - After login, private backend calls should receive `Authorization: Bearer <sessionToken>` from `baseApi`.
 - Signup responses must be typed without `password`.
 - Login and signup must remain separate pages with separate route-level logic: `LoginPage` owns login and `SignupPage` owns registration.
 - Auth form validation schemas live in `src/slices/auth/model/schemas.ts`.
+- Shared auth reads should go through `src/slices/auth/model/useAuth.ts` instead of repeating direct Redux selector plus token-validity logic.
 - After a successful login, navigate to `/home`.
 
 ## Routing
 
 - Route definitions live in `src/app/router/routes.tsx`.
 - Use `react-router-dom` primitives (`RouterProvider`, `createBrowserRouter`, `Link`, `NavLink`, `Outlet`) for navigation.
-- `AppShell` is the shared route layout and renders child pages through `Outlet`.
+- Public auth routes render through `PublicLayout`; private module routes render through `PrivateLayout`.
+- `PrivateLayout` owns shared module navigation and renders child pages through `Outlet`; logged-out auth pages should not show module navigation.
+- Public and private route access is enforced with route guards in `src/app/router/RouteGuards.tsx`: unauthenticated users redirect to `/login`, and authenticated users redirect away from public auth pages to `/home`.
 - Each feature route should render a page owned by that feature slice.
 - The root path `/` should render the login flow directly, not a generic landing/home page.
 - Keep route paths in Spanish when they are user-facing, for example `/historial`, `/eventos`, and `/registro`.
@@ -102,6 +106,7 @@ Rules:
 - Keep touch ergonomics, safe-area insets, and standalone PWA display in mind for shared layout components.
 - Use theme tokens for colors, spacing, typography, radii, and shadows.
 - Keep reusable styled primitives near their component.
+- Reusable design-system primitives such as buttons, inputs, form fields, layout helpers, feedback components, overlays, badges, and navigation pieces live under `src/slices/common/components`; adapt them there instead of recreating one-off versions inside feature slices.
 - Cards should use a radius of `8px` unless a local design reason is documented.
 - Avoid one-color interfaces; Expin should feel clean, practical, and finance-oriented rather than decorative.
 
@@ -121,6 +126,10 @@ Rules:
 - `src/main.tsx` registers the service worker outside development.
 - `index.html` links the web app manifest and mobile app metadata.
 - `App.tsx` renders `RouterProvider` with the route tree from `src/app/router/routes.tsx`.
+- `src/app/router/routes.tsx` separates public auth routes from private module routes with `PublicRoute`/`PublicLayout` and `PrivateRoute`/`PrivateLayout`.
+- `src/app/theme/theme.ts` includes compatibility tokens for the initial app (`spacing`, `fontSizes.xxl`, `shadows.soft`) plus expanded design-system tokens (`space`, `fontWeights`, `lineHeights`, `sizes`, `zIndex`, `breakpoints`, `transitions`, and `media` helpers).
+- Shared reusable UI primitives exist under `src/slices/common/components`, including button, text input, password input, form field, layout, navigation, feedback, overlay, badge, spinner, and status components.
+- Current auth pages use the shared `FormField`, `TextInput`, `PasswordInput`, `Button`, `LinkButton`, `Alert`, and `Page` primitives instead of page-local input/button styling.
 - Initial routes exist for `/`, `/login`, `/registro`, `/home`, `/historial`, `/eventos`, and `/auth`.
 - `auth`, `events`, and `expense-history` have RTK Query endpoint files and model types.
 - `/` and `/login` render `LoginPage`; `/registro` renders `SignupPage`; `/auth` redirects to `/login`.

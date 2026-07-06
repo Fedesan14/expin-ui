@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { baseApi } from '../api/baseApi'
 import { authReducer } from '../../slices/auth/model/authSlice'
+import { writeStoredAuthState } from '../../slices/auth/model/authStorage'
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,10 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(baseApi.middleware),
   devTools: import.meta.env.DEV,
+})
+
+store.subscribe(() => {
+  writeStoredAuthState(store.getState().auth)
 })
 
 export type RootState = ReturnType<typeof store.getState>
