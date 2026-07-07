@@ -143,4 +143,4 @@ Rules:
 - Events UI routes are `/eventos`, `/eventos/nuevo`, `/eventos/:eventId`, `/eventos/:eventId/editar`, `/eventos/:eventId/gastos/nuevo`, and `/eventos/:eventId/gastos/:expenseId/editar`.
 - Event invitation links from the backend use `/events/invite/:inviteToken`; the private frontend route joins through `POST /events/invite/{inviteToken}` without a body, then navigates to `/eventos/:eventId`.
 - Events v1 supports adding guest participants by `guestName` in event forms. Existing participants with `userId` are preserved during event edits, but the UI does not implement user search yet.
-- Event settlement/debt calculation is intentionally not represented in the frontend until the backend exposes an explicit endpoint.
+- Event settlement calculation is represented in the event detail page. The events slice calls `POST /events/{eventId}/settlement_calculate` with body `{ "strategy": "OWNER_CENTRIC" }`, renders backend balances and suggested transfers, and must not recalculate transfers in the frontend.

@@ -5,6 +5,7 @@ import type {
   EventFormValues,
   EventParticipantRequest,
   EventParticipantResponse,
+  EventSettlementStrategy,
 } from './types'
 
 function formatLocalDate(value: string) {
@@ -45,6 +46,14 @@ export function formatAmount(amount: string | number) {
     currency: 'ARS',
     maximumFractionDigits: 2,
   }).format(numericAmount)
+}
+
+export function formatSettlementStrategy(strategy: EventSettlementStrategy) {
+  if (strategy === 'OWNER_CENTRIC') {
+    return 'Division equitativa'
+  }
+
+  return strategy
 }
 
 export function getParticipantName(

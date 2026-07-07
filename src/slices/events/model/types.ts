@@ -54,6 +54,37 @@ export type CreateEventExpenseRequest = {
 
 export type UpdateEventExpenseRequest = CreateEventExpenseRequest
 
+export type EventSettlementStrategy = 'OWNER_CENTRIC'
+
+export type EventSettlementRequest = {
+  strategy: EventSettlementStrategy
+}
+
+export type EventParticipantBalanceResponse = {
+  participantId: string
+  displayName: string
+  paidAmount: number
+  owedAmount: number
+  balance: number
+}
+
+export type EventTransferResponse = {
+  fromParticipantId: string
+  fromDisplayName: string
+  toParticipantId: string
+  toDisplayName: string
+  amount: number
+}
+
+export type EventSettlementResponse = {
+  eventId: string
+  strategy: EventSettlementStrategy
+  totalAmount: number
+  participantCount: number
+  balances: EventParticipantBalanceResponse[]
+  transfers: EventTransferResponse[]
+}
+
 export type EventFormValues = {
   title: string
   description: string

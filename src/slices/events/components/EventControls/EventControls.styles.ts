@@ -67,6 +67,35 @@ export const Meta = styled.div`
   gap: ${({ theme }) => theme.space['2']};
 `
 
+export const SummaryBar = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: ${({ theme }) => theme.space['2']};
+`
+
+export const SummaryItem = styled.div`
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  gap: ${({ theme }) => theme.space['2']};
+  padding: ${({ theme }) => `${theme.space['1']} ${theme.space['3']}`};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radii.pill};
+  background: ${({ theme }) => theme.colors.surfaceAlt};
+`
+
+export const SummaryLabel = styled.span`
+  color: ${({ theme }) => theme.colors.textMuted};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  font-weight: ${({ theme }) => theme.fontWeights.semibold};
+`
+
+export const SummaryValue = styled.span`
+  color: ${({ theme }) => theme.colors.text};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-weight: ${({ theme }) => theme.fontWeights.bold};
+`
+
 export const Pill = styled.span`
   display: inline-flex;
   min-height: 28px;
@@ -205,6 +234,46 @@ export const ParticipantItem = styled.li`
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.radii.md};
   padding: ${({ theme }) => `${theme.space['2']} ${theme.space['3']}`};
+`
+
+export const BalanceItem = styled.li`
+  display: grid;
+  gap: ${({ theme }) => theme.space['2']};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radii.md};
+  padding: ${({ theme }) => theme.space['3']};
+
+  ${media.sm} {
+    grid-template-columns: minmax(0, 1.3fr) repeat(3, minmax(0, 1fr));
+    align-items: center;
+  }
+`
+
+export const BalanceName = styled.span`
+  color: ${({ theme }) => theme.colors.text};
+  font-weight: ${({ theme }) => theme.fontWeights.semibold};
+`
+
+export const BalanceMetric = styled.span`
+  display: grid;
+  gap: ${({ theme }) => theme.space['1']};
+  color: ${({ theme }) => theme.colors.text};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+`
+
+export const BalanceMetricLabel = styled.span`
+  color: ${({ theme }) => theme.colors.textMuted};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  font-weight: ${({ theme }) => theme.fontWeights.semibold};
+`
+
+export const TransferItem = styled.li`
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radii.md};
+  color: ${({ theme }) => theme.colors.text};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  line-height: ${({ theme }) => theme.lineHeights.normal};
+  padding: ${({ theme }) => theme.space['3']};
 `
 
 export const DetailGrid = styled.div`
