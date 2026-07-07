@@ -131,9 +131,14 @@ Rules:
 - `src/app/router/routes.tsx` separates public auth routes from private module routes with `PublicRoute`/`PublicLayout` and `PrivateRoute`/`PrivateLayout`.
 - `src/app/theme/theme.ts` includes compatibility tokens for the initial app (`spacing`, `fontSizes.xxl`, `shadows.soft`) plus expanded design-system tokens (`space`, `fontWeights`, `lineHeights`, `sizes`, `zIndex`, `breakpoints`, `transitions`, and `media` helpers).
 - Shared reusable UI primitives exist under `src/slices/common/components`, including button, text input, password input, form field, layout, navigation, feedback, overlay, badge, spinner, and status components.
+- Cross-cutting transient notifications use the shared Toast provider and `useToast` hook from `src/slices/common/components/Toast`; mount stays in `AppProviders`.
 - Shared reusable SVG icons exist under `src/slices/common/icons`.
 - Current auth pages use the shared `FormField`, `TextInput`, `PasswordInput`, `Button`, `LinkButton`, `Alert`, and `Page` primitives instead of page-local input/button styling.
 - Initial routes exist for `/`, `/login`, `/registro`, `/home`, `/historial`, `/eventos`, and `/auth`.
 - `auth`, `events`, and `expense-history` have RTK Query endpoint files and model types.
 - `/` and `/login` render `LoginPage`; `/registro` renders `SignupPage`; `/auth` redirects to `/login`.
 - `/home` renders the home page from `src/slices/common/pages/HomePage`.
+- The `events` slice owns the shared-expense event workflow. It connects private backend endpoints under `/events` and `/events/{eventId}/expenses`, including list, create, detail, update, and delete operations for both events and event expenses.
+- Events UI routes are `/eventos`, `/eventos/nuevo`, `/eventos/:eventId`, `/eventos/:eventId/editar`, `/eventos/:eventId/gastos/nuevo`, and `/eventos/:eventId/gastos/:expenseId/editar`.
+- Events v1 supports adding guest participants by `guestName` in event forms. Existing participants with `userId` are preserved during event edits, but the UI does not implement user search yet.
+- Event settlement/debt calculation is intentionally not represented in the frontend until the backend exposes an explicit endpoint.

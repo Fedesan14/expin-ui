@@ -1,13 +1,14 @@
 import styled, { css } from "styled-components"
 import { Link } from "react-router-dom"
+import type { DefaultTheme } from "styled-components"
 
 export type LinkButtonTone = "primary" | "neutral" | "danger"
 export type LinkButtonSize = "sm" | "md"
 
 const toneColor = {
-  primary: (c: any) => c.primary,
-  neutral: (c: any) => c.textMuted,
-  danger: (c: any) => c.danger,
+  primary: (c: DefaultTheme["colors"]) => c.primary,
+  neutral: (c: DefaultTheme["colors"]) => c.textMuted,
+  danger: (c: DefaultTheme["colors"]) => c.danger,
 }
 
 const base = css<{ $tone: LinkButtonTone; $size: LinkButtonSize }>`
