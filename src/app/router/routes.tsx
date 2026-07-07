@@ -5,6 +5,9 @@ import { PublicLayout } from '../../slices/common/components/PublicLayout'
 import { LoginPage } from '../../slices/auth/pages/LoginPage'
 import { SignupPage } from '../../slices/auth/pages/SignupPage'
 import { HomePage } from '../../slices/common/pages/HomePage'
+import { EventDetailPage } from '../../slices/events/pages/EventDetailPage'
+import { EventExpenseFormPage } from '../../slices/events/pages/EventExpenseFormPage'
+import { EventFormPage } from '../../slices/events/pages/EventFormPage'
 import { EventsPage } from '../../slices/events/pages/EventsPage'
 import { ExpenseHistoryPage } from '../../slices/expense-history/pages/ExpenseHistoryPage'
 
@@ -53,6 +56,26 @@ export const router = createBrowserRouter([
       {
         path: 'eventos',
         element: <EventsPage />,
+      },
+      {
+        path: 'eventos/nuevo',
+        element: <EventFormPage mode="create" />,
+      },
+      {
+        path: 'eventos/:eventId',
+        element: <EventDetailPage />,
+      },
+      {
+        path: 'eventos/:eventId/editar',
+        element: <EventFormPage mode="edit" />,
+      },
+      {
+        path: 'eventos/:eventId/gastos/nuevo',
+        element: <EventExpenseFormPage mode="create" />,
+      },
+      {
+        path: 'eventos/:eventId/gastos/:expenseId/editar',
+        element: <EventExpenseFormPage mode="edit" />,
       },
       {
         path: '*',
