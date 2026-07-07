@@ -120,6 +120,7 @@ Rules:
 - If a feature is added, document its slice ownership and any API contracts that future agents must preserve.
 - Run available validation commands before finishing when practical, and report any command that could not be run.
 - Do not start the Vite dev server or otherwise try to launch the project; the user keeps it running on port `5173`.
+- Production Docker deployment uses the root `Dockerfile`: build with Node, serve the Vite `dist` output with nginx on port `80`, and pass `VITE_API_BASE_URL` as a Docker build argument when the deployed backend URL differs from the local fallback.
 
 ## Current Base
 
@@ -140,5 +141,6 @@ Rules:
 - `/home` renders the home page from `src/slices/common/pages/HomePage`.
 - The `events` slice owns the shared-expense event workflow. It connects private backend endpoints under `/events` and `/events/{eventId}/expenses`, including list, create, detail, update, and delete operations for both events and event expenses.
 - Events UI routes are `/eventos`, `/eventos/nuevo`, `/eventos/:eventId`, `/eventos/:eventId/editar`, `/eventos/:eventId/gastos/nuevo`, and `/eventos/:eventId/gastos/:expenseId/editar`.
+- Event invitation links from the backend use `/events/invite/:inviteToken`; the private frontend route joins through `POST /events/invite/{inviteToken}` without a body, then navigates to `/eventos/:eventId`.
 - Events v1 supports adding guest participants by `guestName` in event forms. Existing participants with `userId` are preserved during event edits, but the UI does not implement user search yet.
 - Event settlement/debt calculation is intentionally not represented in the frontend until the backend exposes an explicit endpoint.
