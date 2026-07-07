@@ -1,0 +1,1 @@
+export { EventInvitePage } from './EventInvitePage'

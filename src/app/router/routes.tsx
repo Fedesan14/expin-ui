@@ -8,6 +8,7 @@ import { HomePage } from '../../slices/common/pages/HomePage'
 import { EventDetailPage } from '../../slices/events/pages/EventDetailPage'
 import { EventExpenseFormPage } from '../../slices/events/pages/EventExpenseFormPage'
 import { EventFormPage } from '../../slices/events/pages/EventFormPage'
+import { EventInvitePage } from '../../slices/events/pages/EventInvitePage'
 import { EventsPage } from '../../slices/events/pages/EventsPage'
 import { ExpenseHistoryPage } from '../../slices/expense-history/pages/ExpenseHistoryPage'
 
@@ -56,6 +57,10 @@ export const router = createBrowserRouter([
       {
         path: 'eventos',
         element: <EventsPage />,
+      },
+      {
+        path: 'events/invite/:inviteToken',
+        element: <EventInvitePage />,
       },
       {
         path: 'eventos/nuevo',

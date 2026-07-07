@@ -17,6 +17,10 @@ type EventExpenseIdArg = EventIdArg & {
   expenseId: string
 }
 
+type EventInviteArg = {
+  inviteToken: string
+}
+
 export const eventsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getEvents: builder.query<EventSummaryResponse[], void>({
@@ -63,6 +67,19 @@ export const eventsApi = baseApi.injectEndpoints({
         { type: 'Events', id: eventId },
         { type: 'Events', id: 'LIST' },
       ],
+    }),
+    joinEventByInviteToken: builder.mutation<EventResponse, EventInviteArg>({
+      query: ({ inviteToken }) => ({
+        url: `/events/invite/${inviteToken}`,
+        method: 'POST',
+      }),
+      invalidatesTags: (result) =>
+        result
+          ? [
+              { type: 'Events', id: result.id },
+              { type: 'Events', id: 'LIST' },
+            ]
+          : [{ type: 'Events', id: 'LIST' }],
     }),
     createEventExpense: builder.mutation<
       EventExpenseResponse,
@@ -116,6 +133,7 @@ export const {
   useGetEventExpenseQuery,
   useGetEventQuery,
   useGetEventsQuery,
+  useJoinEventByInviteTokenMutation,
   useUpdateEventExpenseMutation,
   useUpdateEventMutation,
 } = eventsApi
