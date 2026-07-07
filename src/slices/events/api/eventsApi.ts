@@ -4,6 +4,8 @@ import type {
   CreateEventRequest,
   EventExpenseResponse,
   EventResponse,
+  EventSettlementRequest,
+  EventSettlementResponse,
   EventSummaryResponse,
   UpdateEventExpenseRequest,
   UpdateEventRequest,
@@ -122,10 +124,21 @@ export const eventsApi = baseApi.injectEndpoints({
         { type: 'Events', id: eventId },
       ],
     }),
+    calculateEventSettlement: builder.mutation<
+      EventSettlementResponse,
+      EventIdArg & { body: EventSettlementRequest }
+    >({
+      query: ({ eventId, body }) => ({
+        url: `/events/${eventId}/settlement_calculate`,
+        method: 'POST',
+        body,
+      }),
+    }),
   }),
 })
 
 export const {
+  useCalculateEventSettlementMutation,
   useCreateEventExpenseMutation,
   useCreateEventMutation,
   useDeleteEventExpenseMutation,

@@ -10,6 +10,7 @@ import { Section } from '../../../common/components/Section'
 import { Spinner } from '../../../common/components/Spinner'
 import { useToast } from '../../../common/components/Toast'
 import {
+  useCalculateEventSettlementMutation,
   useDeleteEventExpenseMutation,
   useDeleteEventMutation,
   useGetEventQuery,
@@ -18,6 +19,7 @@ import { getApiStatus, getEventsErrorMessage } from '../../model/apiErrors'
 import {
   formatAmount,
   formatDateRange,
+  formatSettlementStrategy,
   getParticipantName,
 } from '../../model/formatters'
 import type { EventExpenseResponse } from '../../model/types'
@@ -44,10 +46,13 @@ export function EventDetailPage() {
   const [expenseToDelete, setExpenseToDelete] =
     useState<EventExpenseResponse | null>(null)
   const [showParticipants, setShowParticipants] = useState(false)
+  const [showSettlementBalances, setShowSettlementBalances] = useState(false)
   const { data: event, error, isLoading } = useGetEventQuery(
     { eventId: eventId ?? '' },
     { skip: !eventId },
   )
+  const [calculateSettlement, calculateSettlementState] =
+    useCalculateEventSettlementMutation()
   const [deleteEvent, deleteEventState] = useDeleteEventMutation()
   const [deleteExpense, deleteExpenseState] = useDeleteEventExpenseMutation()
 
@@ -109,6 +114,15 @@ export function EventDetailPage() {
       .catch((requestError) => {
         setMessage({ tone: 'danger', text: getEventsErrorMessage(requestError) })
       })
+  }
+
+  const handleCalculateSettlement = () => {
+    setMessage(null)
+    setShowSettlementBalances(false)
+    calculateSettlement({
+      eventId,
+      body: { strategy: 'OWNER_CENTRIC' },
+    }).catch(() => undefined)
   }
 
   if (isLoading) {
@@ -262,6 +276,130 @@ export function EventDetailPage() {
                   </S.Card>
                 ))}
               </S.CardGrid>
+            )}
+          </Section>
+
+          <Section
+            title="Liquidacion"
+            action={
+              <Button
+                loading={calculateSettlementState.isLoading}
+                size="sm"
+                type="button"
+                onClick={handleCalculateSettlement}
+              >
+                Calcular
+              </Button>
+            }
+          >
+            {calculateSettlementState.error ? (
+              <Alert tone="danger">
+                {getEventsErrorMessage(calculateSettlementState.error)}
+              </Alert>
+            ) : null}
+
+            {calculateSettlementState.data ? (
+              <S.Card>
+                <S.SummaryBar>
+                  <S.SummaryItem>
+                    <S.SummaryLabel>Total</S.SummaryLabel>
+                    <S.SummaryValue>
+                      {formatAmount(calculateSettlementState.data.totalAmount)}
+                    </S.SummaryValue>
+                  </S.SummaryItem>
+                  <S.SummaryItem>
+                    <S.SummaryLabel>Participantes</S.SummaryLabel>
+                    <S.SummaryValue>
+                      {calculateSettlementState.data.participantCount}
+                    </S.SummaryValue>
+                  </S.SummaryItem>
+                  <S.SummaryItem>
+                    <S.SummaryLabel>Estrategia</S.SummaryLabel>
+                    <S.SummaryValue>
+                      {formatSettlementStrategy(calculateSettlementState.data.strategy)}
+                    </S.SummaryValue>
+                  </S.SummaryItem>
+                </S.SummaryBar>
+
+                <S.CardHeader>
+                  <S.CardTitle>Transferencias sugeridas</S.CardTitle>
+                </S.CardHeader>
+                {calculateSettlementState.data.transfers.length === 0 ? (
+                  <S.EmptyState>
+                    <S.CardTitle>Evento saldado</S.CardTitle>
+                    <S.MutedText>No hay transferencias pendientes.</S.MutedText>
+                  </S.EmptyState>
+                ) : (
+                  <S.ParticipantList>
+                    {calculateSettlementState.data.transfers.map((transfer) => (
+                      <S.TransferItem
+                        key={`${transfer.fromParticipantId}-${transfer.toParticipantId}-${transfer.amount}`}
+                      >
+                        {transfer.fromDisplayName} debe transferir{' '}
+                        <strong>{formatAmount(transfer.amount)}</strong> a{' '}
+                        {transfer.toDisplayName}.
+                      </S.TransferItem>
+                    ))}
+                  </S.ParticipantList>
+                )}
+
+                                <S.Collapsible>
+                  <S.CollapsibleButton
+                    aria-controls="event-settlement-balances"
+                    aria-expanded={showSettlementBalances}
+                    type="button"
+                    onClick={() =>
+                      setShowSettlementBalances((current) => !current)
+                    }
+                  >
+                    <S.CollapsibleTitle>
+                      <S.CollapsibleLabel>Balances</S.CollapsibleLabel>
+                      <S.CollapsibleHint>
+                        {showSettlementBalances
+                          ? 'Ocultar balances'
+                          : 'Ver importes por participante'}
+                      </S.CollapsibleHint>
+                    </S.CollapsibleTitle>
+                    <S.CollapsibleIcon
+                      $open={showSettlementBalances}
+                      aria-hidden="true"
+                    >
+                      +
+                    </S.CollapsibleIcon>
+                  </S.CollapsibleButton>
+
+                  {showSettlementBalances ? (
+                    <S.ParticipantList id="event-settlement-balances">
+                      {calculateSettlementState.data.balances.map((balance) => (
+                        <S.BalanceItem key={balance.participantId}>
+                          <S.BalanceName>{balance.displayName}</S.BalanceName>
+                          <S.BalanceMetric>
+                            <S.BalanceMetricLabel>Pago</S.BalanceMetricLabel>
+                            {formatAmount(balance.paidAmount)}
+                          </S.BalanceMetric>
+                          <S.BalanceMetric>
+                            <S.BalanceMetricLabel>Debe</S.BalanceMetricLabel>
+                            {formatAmount(balance.owedAmount)}
+                          </S.BalanceMetric>
+                          <S.BalanceMetric>
+                            <S.BalanceMetricLabel>Balance</S.BalanceMetricLabel>
+                            {formatAmount(balance.balance)}
+                          </S.BalanceMetric>
+                        </S.BalanceItem>
+                      ))}
+                    </S.ParticipantList>
+                  ) : null}
+                </S.Collapsible>
+              </S.Card>
+
+              
+            ) : (
+              <S.EmptyState>
+                <S.CardTitle>Sin liquidacion calculada</S.CardTitle>
+                <S.MutedText>
+                  Ejecuta el calculo para ver balances y transferencias sugeridas.
+                </S.MutedText>
+              </S.EmptyState>
             )}
           </Section>
         </S.DetailColumn>
