@@ -249,7 +249,70 @@ export const InlineField = styled.div`
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: ${({ theme }) => theme.space['2']};
-  align-items: end;
+  align-items: start;
+`
+
+export const LookupField = styled.div`
+  display: grid;
+  gap: ${({ theme }) => theme.space['2']};
+`
+
+export const LookupStatus = styled.p`
+  margin: 0;
+  color: ${({ theme }) => theme.colors.textMuted};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  line-height: ${({ theme }) => theme.lineHeights.normal};
+`
+
+export const UserLookupList = styled.div`
+  display: grid;
+  gap: ${({ theme }) => theme.space['2']};
+`
+
+export const UserLookupCard = styled.div`
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: ${({ theme }) => theme.space['3']};
+  align-items: center;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radii.md};
+  background: ${({ theme }) => theme.colors.surfaceAlt};
+  padding: ${({ theme }) => `${theme.space['2']} ${theme.space['3']}`};
+`
+
+export const UserLookupBody = styled.div`
+  display: grid;
+  min-width: 0;
+  gap: ${({ theme }) => theme.space['1']};
+`
+
+export const UserLookupName = styled.span`
+  overflow-wrap: anywhere;
+  color: ${({ theme }) => theme.colors.text};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-weight: ${({ theme }) => theme.fontWeights.semibold};
+  line-height: ${({ theme }) => theme.lineHeights.snug};
+`
+
+export const UserLookupEmail = styled.span`
+  overflow-wrap: anywhere;
+  color: ${({ theme }) => theme.colors.textMuted};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  line-height: ${({ theme }) => theme.lineHeights.normal};
+`
+
+export const CompactButtonSlot = styled.div`
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  > button {
+    height: 30px;
+    min-height: 30px;
+    padding: 0 ${({ theme }) => theme.space['2']};
+    border-radius: ${({ theme }) => theme.radii.sm};
+    font-size: ${({ theme }) => theme.fontSizes.xs};
+  }
 `
 
 export const ParticipantList = styled.ul`
@@ -258,6 +321,23 @@ export const ParticipantList = styled.ul`
   list-style: none;
   margin: 0;
   padding: 0;
+`
+
+export const ParticipantEntry = styled.li`
+  display: grid;
+  gap: ${({ theme }) => theme.space['2']};
+`
+
+export const SelectedParticipantPill = styled.div`
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: ${({ theme }) => theme.space['3']};
+  align-items: center;
+  min-height: ${({ theme }) => theme.sizes.touch};
+  border: 1px solid ${({ theme }) => theme.colors.primary};
+  border-radius: ${({ theme }) => theme.radii.pill};
+  background: ${({ theme }) => theme.colors.primarySoft};
+  padding: ${({ theme }) => `${theme.space['2']} ${theme.space['2']} ${theme.space['2']} ${theme.space['4']}`};
 `
 
 export const ParticipantItem = styled.li`

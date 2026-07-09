@@ -28,11 +28,12 @@ function getEventFormValues(event: EventResponse): EventFormValues {
     description: event.description ?? '',
     startDate: event.startDate ?? '',
     endDate: event.endDate ?? '',
-    participants: event.participants
-      .filter((participant) => participant.type === 'GUEST')
-      .map((participant) => ({
-        guestName: participant.displayName,
-      })),
+    participants: event.participants.map((participant) => ({
+      email: '',
+      guestName: participant.displayName,
+      userId: participant.userId ?? '',
+      username: participant.type === 'USER' ? participant.displayName : '',
+    })),
   }
 }
 
@@ -52,9 +53,9 @@ export function EventFormPage({ mode }: EventFormPageProps) {
     return <Navigate to="/eventos" replace />
   }
 
-  const handleSubmit = ({ values, preservedParticipants }: EventFormSubmitValues) => {
+  const handleSubmit = ({ values }: EventFormSubmitValues) => {
     setMessage(null)
-    const body = toEventRequest(values, preservedParticipants)
+    const body = toEventRequest(values)
 
     const request =
       isEditing && eventId
@@ -103,7 +104,6 @@ export function EventFormPage({ mode }: EventFormPageProps) {
         <Section>
           <EventForm
             defaultValues={eventQuery.data ? getEventFormValues(eventQuery.data) : undefined}
-            existingParticipants={eventQuery.data?.participants}
             loading={createState.isLoading || updateState.isLoading}
             submitLabel={isEditing ? 'Guardar cambios' : 'Crear evento'}
             onSubmit={handleSubmit}

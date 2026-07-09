@@ -68,14 +68,23 @@ export function getParticipantName(
 
 export function toEventRequest(
   values: EventFormValues,
-  preservedParticipants: EventParticipantRequest[] = [],
 ): CreateEventRequest {
-  const guestParticipants = values.participants
-    .map((participant) => participant.guestName.trim())
-    .filter(Boolean)
-    .map((guestName) => ({ guestName }))
+  const participants = values.participants.reduce<EventParticipantRequest[]>(
+    (participants, participant) => {
+      if (participant.userId) {
+        participants.push({ userId: participant.userId })
+        return participants
+      }
 
-  const participants = [...preservedParticipants, ...guestParticipants]
+      const guestName = participant.guestName.trim()
+      if (guestName) {
+        participants.push({ guestName })
+      }
+
+      return participants
+    },
+    [],
+  )
 
   return {
     title: values.title.trim(),
