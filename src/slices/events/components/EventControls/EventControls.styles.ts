@@ -73,15 +73,26 @@ export const SummaryBar = styled.div`
   gap: ${({ theme }) => theme.space['2']};
 `
 
-export const SummaryItem = styled.div`
+export const SummaryItem = styled.div<{ $tone?: 'neutral' | 'expense' | 'transfer' }>`
   display: inline-flex;
   min-height: 32px;
   align-items: center;
   gap: ${({ theme }) => theme.space['2']};
   padding: ${({ theme }) => `${theme.space['1']} ${theme.space['3']}`};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  border: 1px solid
+    ${({ theme, $tone }) =>
+      $tone === 'expense'
+        ? theme.colors.domain.expense
+        : $tone === 'transfer'
+          ? theme.colors.domain.transfer
+          : theme.colors.border};
   border-radius: ${({ theme }) => theme.radii.pill};
-  background: ${({ theme }) => theme.colors.surfaceAlt};
+  background: ${({ theme, $tone }) =>
+    $tone === 'expense'
+      ? theme.colors.domain.expenseContainer
+      : $tone === 'transfer'
+        ? theme.colors.domain.transferContainer
+        : theme.colors.surfaceAlt};
 `
 
 export const SummaryLabel = styled.span`
@@ -96,13 +107,27 @@ export const SummaryValue = styled.span`
   font-weight: ${({ theme }) => theme.fontWeights.bold};
 `
 
-export const Pill = styled.span`
+export const Pill = styled.span<{ $tone?: 'neutral' | 'expense' | 'transfer' | 'pending' }>`
   display: inline-flex;
   min-height: 28px;
   align-items: center;
   border-radius: ${({ theme }) => theme.radii.pill};
-  background: ${({ theme }) => theme.colors.surfaceAlt};
-  color: ${({ theme }) => theme.colors.textMuted};
+  background: ${({ theme, $tone }) =>
+    $tone === 'expense'
+      ? theme.colors.domain.expenseContainer
+      : $tone === 'transfer'
+        ? theme.colors.domain.transferContainer
+        : $tone === 'pending'
+          ? theme.colors.domain.pendingContainer
+          : theme.colors.surfaceAlt};
+  color: ${({ theme, $tone }) =>
+    $tone === 'expense'
+      ? theme.colors.domain.onExpenseContainer
+      : $tone === 'transfer'
+        ? theme.colors.domain.onTransferContainer
+        : $tone === 'pending'
+          ? theme.colors.domain.onPendingContainer
+          : theme.colors.textMuted};
   font-size: ${({ theme }) => theme.fontSizes.xs};
   font-weight: ${({ theme }) => theme.fontWeights.semibold};
   padding: 0 ${({ theme }) => theme.space['3']};
@@ -376,6 +401,16 @@ export const BalanceMetric = styled.span`
   font-size: ${({ theme }) => theme.fontSizes.sm};
 `
 
+export const BalanceAmount = styled.strong<{ $tone: 'positive' | 'negative' | 'neutral' }>`
+  color: ${({ theme, $tone }) =>
+    $tone === 'positive'
+      ? theme.colors.domain.positiveBalance
+      : $tone === 'negative'
+        ? theme.colors.domain.negativeBalance
+        : theme.colors.text};
+  font-weight: ${({ theme }) => theme.fontWeights.bold};
+`
+
 export const BalanceMetricLabel = styled.span`
   color: ${({ theme }) => theme.colors.textMuted};
   font-size: ${({ theme }) => theme.fontSizes.xs};
@@ -383,9 +418,10 @@ export const BalanceMetricLabel = styled.span`
 `
 
 export const TransferItem = styled.li`
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  border: 1px solid ${({ theme }) => theme.colors.domain.transfer};
   border-radius: ${({ theme }) => theme.radii.md};
-  color: ${({ theme }) => theme.colors.text};
+  background: ${({ theme }) => theme.colors.domain.transferContainer};
+  color: ${({ theme }) => theme.colors.domain.onTransferContainer};
   font-size: ${({ theme }) => theme.fontSizes.sm};
   line-height: ${({ theme }) => theme.lineHeights.normal};
   padding: ${({ theme }) => theme.space['3']};

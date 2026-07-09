@@ -20,8 +20,8 @@ export const Root = styled.button<{ $extended: boolean; $hasBottomNav: boolean }
   border-radius: ${({ theme, $extended }) =>
     $extended ? theme.radii.pill : theme.radii.lg};
 
-  background: ${({ theme }) => theme.colors.accent};
-  color: ${({ theme }) => theme.colors.textInverse};
+  background: ${({ theme }) => theme.colors.roles.primary};
+  color: ${({ theme }) => theme.colors.roles.onPrimary};
   font-weight: ${({ theme }) => theme.fontWeights.semibold};
   font-size: ${({ theme }) => theme.fontSizes.md};
   box-shadow: ${({ theme }) => theme.shadows.lg};
@@ -30,7 +30,7 @@ export const Root = styled.button<{ $extended: boolean; $hasBottomNav: boolean }
     transform ${({ theme }) => theme.transitions.fast};
 
   &:hover:not(:disabled) {
-    background: ${({ theme }) => theme.colors.accentHover};
+    background: ${({ theme }) => theme.colors.state.hoverOnPrimary};
   }
 
   &:active:not(:disabled) {

@@ -112,6 +112,9 @@ Rules:
 - Design mobile-first: default styles target small touch screens, then expand with `min-width` media queries.
 - Keep touch ergonomics, safe-area insets, and standalone PWA display in mind for shared layout components.
 - Use theme tokens for colors, spacing, typography, radii, and shadows.
+- Color tokens live centrally in `src/app/theme/theme.ts`: use Material Design 3 role tokens under `theme.colors.roles` for brand and UI surfaces, interaction tokens under `theme.colors.state`, and domain tokens under `theme.colors.domain` only for financial meaning such as income, expense, transfer, pending, positive balance, and negative balance.
+- Do not hardcode hex, rgb, rgba, hsl, or hsla values in components; add or reuse a semantic token in the theme instead.
+- Primary green is the Expin brand/action color, not the default color for income. Income must use the financial `domain.income` tokens.
 - Keep reusable styled primitives near their component.
 - Reusable design-system primitives such as buttons, inputs, form fields, layout helpers, feedback components, overlays, badges, and navigation pieces live under `src/slices/common/components`; adapt them there instead of recreating one-off versions inside feature slices.
 - Shared SVG icon components live under `src/slices/common/icons`; add icons there instead of depending on external icon libraries or inline SVG copies in feature code.

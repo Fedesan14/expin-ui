@@ -3,13 +3,13 @@ import type { ToastTone } from './ToastContext'
 
 const toneStyles = {
   success: css`
-    border-left-color: ${({ theme }) => theme.colors.success};
+    border-left-color: ${({ theme }) => theme.colors.roles.tertiary};
   `,
   danger: css`
-    border-left-color: ${({ theme }) => theme.colors.danger};
+    border-left-color: ${({ theme }) => theme.colors.roles.error};
   `,
   info: css`
-    border-left-color: ${({ theme }) => theme.colors.primary};
+    border-left-color: ${({ theme }) => theme.colors.roles.primary};
   `,
 }
 
@@ -59,16 +59,16 @@ export const Icon = styled.span<{ $tone: ToastTone }>`
   border-radius: ${({ theme }) => theme.radii.full};
   background: ${({ theme, $tone }) =>
     $tone === 'success'
-      ? theme.colors.successSoft
+      ? theme.colors.roles.tertiaryContainer
       : $tone === 'danger'
-        ? theme.colors.dangerSoft
-        : theme.colors.primarySoft};
+        ? theme.colors.roles.errorContainer
+        : theme.colors.roles.primaryContainer};
   color: ${({ theme, $tone }) =>
     $tone === 'success'
-      ? theme.colors.success
+      ? theme.colors.roles.onTertiaryContainer
       : $tone === 'danger'
-        ? theme.colors.danger
-        : theme.colors.primary};
+        ? theme.colors.roles.onErrorContainer
+        : theme.colors.roles.onPrimaryContainer};
   font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: ${({ theme }) => theme.fontWeights.bold};
   line-height: 1;
