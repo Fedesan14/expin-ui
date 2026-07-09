@@ -23,6 +23,7 @@ const emptyValues: EventExpenseFormValues = {
   description: '',
   amount: '',
   paidByParticipantId: '',
+  owedByParticipantIds: [],
 }
 
 export function EventExpenseForm({
@@ -89,6 +90,25 @@ export function EventExpenseForm({
           </S.Select>
         </FormField>
       </S.FieldRow>
+
+      <FormField
+        label="Deben este gasto"
+        error={errors.owedByParticipantIds?.message}
+        required
+      >
+        <S.CheckboxGroup $invalid={Boolean(errors.owedByParticipantIds)}>
+          {participants.map((participant) => (
+            <S.CheckboxOption key={participant.id}>
+              <input
+                type="checkbox"
+                value={participant.id}
+                {...register('owedByParticipantIds')}
+              />
+              <span>{participant.displayName}</span>
+            </S.CheckboxOption>
+          ))}
+        </S.CheckboxGroup>
+      </FormField>
 
       <S.Actions>
         <Button loading={loading} type="submit">

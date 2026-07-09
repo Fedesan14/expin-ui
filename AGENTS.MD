@@ -140,6 +140,7 @@ Rules:
 - `/` and `/login` render `LoginPage`; `/registro` renders `SignupPage`; `/auth` redirects to `/login`.
 - `/home` renders the home page from `src/slices/common/pages/HomePage`.
 - The `events` slice owns the shared-expense event workflow. It connects private backend endpoints under `/events` and `/events/{eventId}/expenses`, including list, create, detail, update, and delete operations for both events and event expenses.
+- Event expense create/update requests must always send `owedByParticipantIds: string[]` with at least one event participant ID; the backend uses this list to split each expense only among the selected participants.
 - Events UI routes are `/eventos`, `/eventos/nuevo`, `/eventos/:eventId`, `/eventos/:eventId/editar`, `/eventos/:eventId/gastos/nuevo`, and `/eventos/:eventId/gastos/:expenseId/editar`.
 - Event invitation links from the backend use `/events/invite/:inviteToken`; the private frontend route joins through `POST /events/invite/{inviteToken}` without a body, then navigates to `/eventos/:eventId`.
 - Events v1 supports adding guest participants by `guestName` in event forms. Existing participants with `userId` are preserved during event edits, but the UI does not implement user search yet.

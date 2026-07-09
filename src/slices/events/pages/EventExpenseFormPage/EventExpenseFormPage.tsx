@@ -30,6 +30,7 @@ function getExpenseFormValues(
     description: expense.description ?? '',
     amount: String(expense.amount),
     paidByParticipantId: expense.paidByParticipantId,
+    owedByParticipantIds: expense.owedByParticipantIds,
   }
 }
 
@@ -84,7 +85,7 @@ export function EventExpenseFormPage({ mode }: EventExpenseFormPageProps) {
     <Page maxWidth="narrow">
       <PageHeader
         title={isEditing ? 'Editar gasto' : 'Crear gasto'}
-        subtitle="Registra el monto y quien lo pago."
+        subtitle="Registra el monto, quien lo pago y quienes lo deben."
         actions={<LinkButton to={`/eventos/${eventId}`}>Volver</LinkButton>}
       />
 
@@ -109,7 +110,7 @@ export function EventExpenseFormPage({ mode }: EventExpenseFormPageProps) {
 
       {event?.participants.length === 0 ? (
         <Alert tone="warning">
-          El evento no tiene participantes disponibles para asignar el pago.
+          El evento no tiene participantes disponibles para asignar el gasto.
         </Alert>
       ) : null}
 

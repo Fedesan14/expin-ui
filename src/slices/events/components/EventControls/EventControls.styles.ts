@@ -210,6 +210,41 @@ export const FieldRow = styled.div`
   }
 `
 
+export const CheckboxGroup = styled.div<{ $invalid?: boolean }>`
+  display: grid;
+  gap: ${({ theme }) => theme.space['2']};
+  border: 1px solid
+    ${({ theme, $invalid }) =>
+      $invalid ? theme.colors.danger : theme.colors.borderStrong};
+  border-radius: ${({ theme }) => theme.radii.md};
+  background: ${({ theme }) => theme.colors.surface};
+  padding: ${({ theme }) => theme.space['2']};
+`
+
+export const CheckboxOption = styled.label`
+  display: flex;
+  min-height: ${({ theme }) => theme.sizes.touch};
+  align-items: center;
+  gap: ${({ theme }) => theme.space['3']};
+  border-radius: ${({ theme }) => theme.radii.sm};
+  color: ${({ theme }) => theme.colors.text};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  padding: ${({ theme }) => `${theme.space['2']} ${theme.space['3']}`};
+
+  &:has(input:checked) {
+    background: ${({ theme }) => theme.colors.primarySoft};
+    color: ${({ theme }) => theme.colors.primary};
+    font-weight: ${({ theme }) => theme.fontWeights.semibold};
+  }
+
+  input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: ${({ theme }) => theme.colors.primary};
+  }
+`
+
 export const InlineField = styled.div`
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
