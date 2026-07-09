@@ -7,6 +7,7 @@ export const loginSchema: yup.ObjectSchema<LoginRequest> = yup.object({
     .trim()
     .required('Ingresa tu usuario o email.'),
   password: yup.string().required('Ingresa tu contraseña.'),
+  autologinHash: yup.string().optional(),
 })
 
 export const signupSchema: yup.ObjectSchema<SignupRequest> = yup.object({

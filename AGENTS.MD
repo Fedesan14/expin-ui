@@ -79,12 +79,18 @@ Rules:
 - The auth feature is owned by `src/slices/auth`.
 - Signup uses `POST /auth/signup` with JSON body `{ username, password, email }`.
 - Login uses `POST /auth/login` without a body and with `Authorization: Basic <base64(identifier:password)>`; `identifier` can be username or email.
+- When quick login is enabled during login, the frontend sends the generated device `autologinHash` in the `X-Autologin-Hash` header of `POST /auth/login`.
+- Quick login uses `POST /auth/autologin` with the stored `autologinHash` in the `X-Autologin-Hash` header and the stored username in the JSON body; it receives the same token response as regular login.
+- PWA quick login is owned by `src/slices/auth/model/quickLogin.ts`; it stores only the generated `autologinHash`, the username, and the WebAuthn platform credential id on the device, then asks for platform user verification before autologin.
+- The login page shows `Activar tu ingreso rápido` only when a user-verifying platform authenticator is available through WebAuthn.
+- `src/slices/auth/model/rememberedLogin.ts` owns local frontend-only login username storage. The remembered username switch controls login prefill UX, while the last login username can be stored independently for quick-login support.
 - Successful login returns `sessionToken`, `sessionTokenExpiresAt`, `refreshToken`, and `refreshTokenExpiresAt`.
 - Store auth tokens in the local `auth` Redux slice through `src/slices/auth/model/authSlice.ts`; do not duplicate the token in RTK Query cache state.
 - Auth state is hydrated from `localStorage` through `src/slices/auth/model/authStorage.ts` and synchronized from the Redux store so sessions survive page refreshes while valid.
 - After login, private backend calls should receive `Authorization: Bearer <sessionToken>` from `baseApi`.
 - Signup responses must be typed without `password`.
 - Login and signup must remain separate pages with separate route-level logic: `LoginPage` owns login and `SignupPage` owns registration.
+- Logout must ask whether to keep or disable quick login when an autologin hash exists on the device.
 - Auth form validation schemas live in `src/slices/auth/model/schemas.ts`.
 - Shared auth reads should go through `src/slices/auth/model/useAuth.ts` instead of repeating direct Redux selector plus token-validity logic.
 - After a successful login, navigate to `/home`.
