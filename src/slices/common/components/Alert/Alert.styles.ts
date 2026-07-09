@@ -5,10 +5,26 @@ export type AlertTone = "info" | "success" | "warning" | "danger"
 
 const toneStyles = (theme: DefaultTheme, tone: AlertTone) => {
   const map = {
-    info: { bg: theme.colors.primarySoft, fg: theme.colors.primary, border: theme.colors.primary },
-    success: { bg: theme.colors.successSoft, fg: theme.colors.success, border: theme.colors.success },
-    warning: { bg: theme.colors.warningSoft, fg: theme.colors.warning, border: theme.colors.warning },
-    danger: { bg: theme.colors.dangerSoft, fg: theme.colors.danger, border: theme.colors.danger },
+    info: {
+      bg: theme.colors.roles.primaryContainer,
+      fg: theme.colors.roles.onPrimaryContainer,
+      border: theme.colors.roles.primary,
+    },
+    success: {
+      bg: theme.colors.roles.tertiaryContainer,
+      fg: theme.colors.roles.onTertiaryContainer,
+      border: theme.colors.roles.tertiary,
+    },
+    warning: {
+      bg: theme.colors.roles.secondaryContainer,
+      fg: theme.colors.roles.onSecondaryContainer,
+      border: theme.colors.roles.secondary,
+    },
+    danger: {
+      bg: theme.colors.roles.errorContainer,
+      fg: theme.colors.roles.onErrorContainer,
+      border: theme.colors.roles.error,
+    },
   }
   return map[tone]
 }

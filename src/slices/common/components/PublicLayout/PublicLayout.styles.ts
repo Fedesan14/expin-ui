@@ -5,7 +5,7 @@ export const Shell = styled.div`
   min-height: 100svh;
   min-height: 100dvh;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.78), transparent 320px),
+    linear-gradient(180deg, ${({ theme }) => theme.colors.state.surfaceWash}, transparent 320px),
     ${({ theme }) => theme.colors.background};
 `
 

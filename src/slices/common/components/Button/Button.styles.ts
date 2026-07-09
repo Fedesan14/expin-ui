@@ -36,18 +36,18 @@ const sizeStyles = (theme: DefaultTheme): Record<ButtonSize, ReturnType<typeof c
 
 const variantStyles = (theme: DefaultTheme): Record<ButtonVariant, ReturnType<typeof css>> => ({
   primary: css`
-    background: ${theme.colors.primary};
-    color: ${theme.colors.textInverse};
+    background: ${theme.colors.roles.primary};
+    color: ${theme.colors.roles.onPrimary};
     &:hover:not(:disabled) {
-      background: ${theme.colors.primaryHover};
+      background: ${theme.colors.state.hoverOnPrimary};
     }
   `,
   secondary: css`
     background: ${theme.colors.surface};
-    color: ${theme.colors.primary};
-    border-color: ${theme.colors.primary};
+    color: ${theme.colors.roles.primary};
+    border-color: ${theme.colors.roles.primary};
     &:hover:not(:disabled) {
-      background: ${theme.colors.primarySoft};
+      background: ${theme.colors.roles.primaryContainer};
     }
   `,
   tertiary: css`
@@ -65,22 +65,22 @@ const variantStyles = (theme: DefaultTheme): Record<ButtonVariant, ReturnType<ty
     }
   `,
   danger: css`
-    background: ${theme.colors.danger};
-    color: ${theme.colors.textInverse};
+    background: ${theme.colors.roles.error};
+    color: ${theme.colors.roles.onError};
     &:hover:not(:disabled) {
       background: ${theme.colors.dangerHover};
     }
   `,
   success: css`
-    background: ${theme.colors.success};
-    color: ${theme.colors.textInverse};
+    background: ${theme.colors.roles.tertiary};
+    color: ${theme.colors.roles.onTertiary};
     &:hover:not(:disabled) {
       filter: brightness(0.95);
     }
   `,
   subtle: css`
-    background: ${theme.colors.primarySoft};
-    color: ${theme.colors.primaryHover};
+    background: ${theme.colors.roles.primaryContainer};
+    color: ${theme.colors.roles.onPrimaryContainer};
     &:hover:not(:disabled) {
       filter: brightness(0.97);
     }

@@ -8,15 +8,87 @@ export type BadgeTone =
   | "success"
   | "warning"
   | "danger"
+  | "income"
+  | "expense"
+  | "transfer"
+  | "pending"
+  | "positiveBalance"
+  | "negativeBalance"
 export type BadgeVariant = "soft" | "solid" | "outline"
 
 const toneColors = (theme: DefaultTheme) => ({
-  neutral: { fg: theme.colors.text, bg: theme.colors.surfaceAlt, solid: theme.colors.textMuted },
-  primary: { fg: theme.colors.primaryHover, bg: theme.colors.primarySoft, solid: theme.colors.primary },
-  accent: { fg: theme.colors.accentHover, bg: theme.colors.accentSoft, solid: theme.colors.accent },
-  success: { fg: theme.colors.success, bg: theme.colors.successSoft, solid: theme.colors.success },
-  warning: { fg: theme.colors.warning, bg: theme.colors.warningSoft, solid: theme.colors.warning },
-  danger: { fg: theme.colors.danger, bg: theme.colors.dangerSoft, solid: theme.colors.danger },
+  neutral: {
+    fg: theme.colors.roles.onSurfaceVariant,
+    bg: theme.colors.roles.surfaceContainer,
+    solid: theme.colors.roles.secondary,
+    onSolid: theme.colors.roles.onSecondary,
+  },
+  primary: {
+    fg: theme.colors.roles.onPrimaryContainer,
+    bg: theme.colors.roles.primaryContainer,
+    solid: theme.colors.roles.primary,
+    onSolid: theme.colors.roles.onPrimary,
+  },
+  accent: {
+    fg: theme.colors.roles.onTertiaryContainer,
+    bg: theme.colors.roles.tertiaryContainer,
+    solid: theme.colors.roles.tertiary,
+    onSolid: theme.colors.roles.onTertiary,
+  },
+  success: {
+    fg: theme.colors.roles.onTertiaryContainer,
+    bg: theme.colors.roles.tertiaryContainer,
+    solid: theme.colors.roles.tertiary,
+    onSolid: theme.colors.roles.onTertiary,
+  },
+  warning: {
+    fg: theme.colors.roles.onSecondaryContainer,
+    bg: theme.colors.roles.secondaryContainer,
+    solid: theme.colors.roles.secondary,
+    onSolid: theme.colors.roles.onSecondary,
+  },
+  danger: {
+    fg: theme.colors.roles.onErrorContainer,
+    bg: theme.colors.roles.errorContainer,
+    solid: theme.colors.roles.error,
+    onSolid: theme.colors.roles.onError,
+  },
+  income: {
+    fg: theme.colors.domain.onIncomeContainer,
+    bg: theme.colors.domain.incomeContainer,
+    solid: theme.colors.domain.income,
+    onSolid: theme.colors.domain.onIncome,
+  },
+  expense: {
+    fg: theme.colors.domain.onExpenseContainer,
+    bg: theme.colors.domain.expenseContainer,
+    solid: theme.colors.domain.expense,
+    onSolid: theme.colors.domain.onExpense,
+  },
+  transfer: {
+    fg: theme.colors.domain.onTransferContainer,
+    bg: theme.colors.domain.transferContainer,
+    solid: theme.colors.domain.transfer,
+    onSolid: theme.colors.domain.onTransfer,
+  },
+  pending: {
+    fg: theme.colors.domain.onPendingContainer,
+    bg: theme.colors.domain.pendingContainer,
+    solid: theme.colors.domain.pending,
+    onSolid: theme.colors.domain.onPending,
+  },
+  positiveBalance: {
+    fg: theme.colors.domain.onPositiveBalanceContainer,
+    bg: theme.colors.domain.positiveBalanceContainer,
+    solid: theme.colors.domain.positiveBalance,
+    onSolid: theme.colors.domain.onPositiveBalance,
+  },
+  negativeBalance: {
+    fg: theme.colors.domain.onNegativeBalanceContainer,
+    bg: theme.colors.domain.negativeBalanceContainer,
+    solid: theme.colors.domain.negativeBalance,
+    onSolid: theme.colors.domain.onNegativeBalance,
+  },
 })
 
 export const Root = styled.span<{ $tone: BadgeTone; $variant: BadgeVariant }>`
@@ -36,7 +108,7 @@ export const Root = styled.span<{ $tone: BadgeTone; $variant: BadgeVariant }>`
     if ($variant === "solid") {
       return css`
         background: ${c.solid};
-        color: ${theme.colors.textInverse};
+        color: ${c.onSolid};
       `
     }
     if ($variant === "outline") {

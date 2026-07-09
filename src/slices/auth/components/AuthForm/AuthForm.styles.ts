@@ -41,7 +41,7 @@ export const Input = styled.input`
 
   &:focus {
     border-color: ${({ theme }) => theme.colors.focus};
-    outline: 3px solid rgba(43, 108, 176, 0.16);
+    outline: 3px solid ${({ theme }) => theme.colors.focusRing};
   }
 `
 
@@ -129,10 +129,10 @@ export const StatusMessage = styled.p<{ $tone: 'danger' | 'success' }>`
   margin: 0;
   padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
   border-radius: ${({ theme }) => theme.radii.md};
-  background: ${({ $tone }) =>
-    $tone === 'success' ? 'rgba(47, 125, 89, 0.1)' : 'rgba(180, 60, 60, 0.1)'};
+  background: ${({ $tone, theme }) =>
+    $tone === 'success' ? theme.colors.tertiarySoft : theme.colors.dangerSoft};
   color: ${({ $tone, theme }) =>
-    $tone === 'success' ? theme.colors.success : theme.colors.danger};
+    $tone === 'success' ? theme.colors.onTertiarySoft : theme.colors.onDangerSoft};
   font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: 800;
 `

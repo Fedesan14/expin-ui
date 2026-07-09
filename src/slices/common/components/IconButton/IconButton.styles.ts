@@ -14,10 +14,10 @@ const variantStyles = (
   theme: DefaultTheme,
 ): Record<IconButtonVariant, ReturnType<typeof css>> => ({
   primary: css`
-    background: ${theme.colors.primary};
-    color: ${theme.colors.textInverse};
+    background: ${theme.colors.roles.primary};
+    color: ${theme.colors.roles.onPrimary};
     &:hover:not(:disabled) {
-      background: ${theme.colors.primaryHover};
+      background: ${theme.colors.state.hoverOnPrimary};
     }
   `,
   secondary: css`
@@ -37,16 +37,16 @@ const variantStyles = (
     }
   `,
   danger: css`
-    background: ${theme.colors.dangerSoft};
-    color: ${theme.colors.danger};
+    background: ${theme.colors.roles.errorContainer};
+    color: ${theme.colors.roles.onErrorContainer};
     &:hover:not(:disabled) {
-      background: ${theme.colors.danger};
-      color: ${theme.colors.textInverse};
+      background: ${theme.colors.roles.error};
+      color: ${theme.colors.roles.onError};
     }
   `,
   subtle: css`
-    background: ${theme.colors.primarySoft};
-    color: ${theme.colors.primaryHover};
+    background: ${theme.colors.roles.primaryContainer};
+    color: ${theme.colors.roles.onPrimaryContainer};
     &:hover:not(:disabled) {
       filter: brightness(0.97);
     }

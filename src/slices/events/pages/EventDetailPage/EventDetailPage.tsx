@@ -226,7 +226,7 @@ export function EventDetailPage() {
             {calculateSettlementState.data ? (
               <S.Card>
                 <S.SummaryBar>
-                  <S.SummaryItem>
+                  <S.SummaryItem $tone="expense">
                     <S.SummaryLabel>Total</S.SummaryLabel>
                     <S.SummaryValue>
                       {formatAmount(calculateSettlementState.data.totalAmount)}
@@ -310,7 +310,17 @@ export function EventDetailPage() {
                           </S.BalanceMetric>
                           <S.BalanceMetric>
                             <S.BalanceMetricLabel>Balance</S.BalanceMetricLabel>
-                            {formatAmount(balance.balance)}
+                            <S.BalanceAmount
+                              $tone={
+                                balance.balance > 0
+                                  ? 'positive'
+                                  : balance.balance < 0
+                                    ? 'negative'
+                                    : 'neutral'
+                              }
+                            >
+                              {formatAmount(balance.balance)}
+                            </S.BalanceAmount>
                           </S.BalanceMetric>
                         </S.BalanceItem>
                       ))}
@@ -367,7 +377,9 @@ export function EventDetailPage() {
                         </S.MutedText>
                       </S.CardHeader>
                       <S.Meta>
-                        <S.Pill>{formatAmount(expense.amount)}</S.Pill>
+                        <S.Pill $tone="expense">
+                          {formatAmount(expense.amount)}
+                        </S.Pill>
                         <S.Pill>
                           {getParticipantName(
                             event.participants,

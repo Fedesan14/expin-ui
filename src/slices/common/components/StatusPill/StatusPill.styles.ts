@@ -1,15 +1,32 @@
 import styled from "styled-components"
 import type { DefaultTheme } from "styled-components"
 
-export type StatusTone = "neutral" | "success" | "warning" | "danger" | "info"
+export type StatusTone =
+  | "neutral"
+  | "success"
+  | "warning"
+  | "danger"
+  | "info"
+  | "income"
+  | "expense"
+  | "transfer"
+  | "pending"
+  | "positiveBalance"
+  | "negativeBalance"
 
 export const toneColor = (theme: DefaultTheme, tone: StatusTone) => {
   const map = {
-    neutral: theme.colors.textMuted,
-    success: theme.colors.success,
-    warning: theme.colors.warning,
-    danger: theme.colors.danger,
-    info: theme.colors.focus,
+    neutral: theme.colors.roles.onSurfaceVariant,
+    success: theme.colors.roles.tertiary,
+    warning: theme.colors.roles.secondary,
+    danger: theme.colors.roles.error,
+    info: theme.colors.roles.primary,
+    income: theme.colors.domain.income,
+    expense: theme.colors.domain.expense,
+    transfer: theme.colors.domain.transfer,
+    pending: theme.colors.domain.pending,
+    positiveBalance: theme.colors.domain.positiveBalance,
+    negativeBalance: theme.colors.domain.negativeBalance,
   }
   return map[tone]
 }

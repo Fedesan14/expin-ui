@@ -63,8 +63,8 @@ export const GlobalStyles = createGlobalStyle`
   }
 
   ::selection {
-    background: ${({ theme }) => theme.colors.primarySoft};
-    color: ${({ theme }) => theme.colors.primaryHover};
+    background: ${({ theme }) => theme.colors.roles.primaryContainer};
+    color: ${({ theme }) => theme.colors.roles.onPrimaryContainer};
   }
 
   :focus-visible {
