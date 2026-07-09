@@ -68,4 +68,8 @@ export const eventExpenseSchema: yup.ObjectSchema<EventExpenseFormValues> =
     paidByParticipantId: yup
       .string()
       .required('Selecciona quien pago el gasto.'),
+    owedByParticipantIds: yup
+      .array(yup.string().required())
+      .min(1, 'Selecciona al menos un participante que deba este gasto.')
+      .required('Selecciona quienes deben este gasto.'),
   })

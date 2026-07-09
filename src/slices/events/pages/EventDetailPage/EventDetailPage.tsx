@@ -38,6 +38,19 @@ function getAbsoluteShareLink(shareLink: string) {
   return `${window.location.origin}${shareLink.startsWith('/') ? '' : '/'}${shareLink}`
 }
 
+function getOwedByLabel(
+  participants: EventExpenseResponse['owedByParticipantIds'],
+  eventParticipants: Parameters<typeof getParticipantName>[0],
+) {
+  if (participants.length === 0) {
+    return 'Sin deudores asignados'
+  }
+
+  return participants
+    .map((participantId) => getParticipantName(eventParticipants, participantId))
+    .join(', ')
+}
+
 export function EventDetailPage() {
   const navigate = useNavigate()
   const { eventId } = useParams()
@@ -46,6 +59,7 @@ export function EventDetailPage() {
   const [expenseToDelete, setExpenseToDelete] =
     useState<EventExpenseResponse | null>(null)
   const [showParticipants, setShowParticipants] = useState(false)
+  const [showExpenses, setShowExpenses] = useState(false)
   const [showSettlementBalances, setShowSettlementBalances] = useState(false)
   const { data: event, error, isLoading } = useGetEventQuery(
     { eventId: eventId ?? '' },
@@ -190,95 +204,6 @@ export function EventDetailPage() {
 
       <S.DetailGrid>
         <S.DetailColumn>
-          <S.Collapsible>
-            <S.CollapsibleButton
-              aria-controls="event-participants"
-              aria-expanded={showParticipants}
-              type="button"
-              onClick={() => setShowParticipants((current) => !current)}
-            >
-              <S.CollapsibleTitle>
-                <S.CollapsibleLabel>Participantes</S.CollapsibleLabel>
-                <S.CollapsibleHint>
-                  {showParticipants
-                    ? 'Ocultar participantes'
-                    : 'Ver quienes forman parte del evento'}
-                </S.CollapsibleHint>
-              </S.CollapsibleTitle>
-              <S.CollapsibleIcon $open={showParticipants} aria-hidden="true">
-                +
-              </S.CollapsibleIcon>
-            </S.CollapsibleButton>
-
-            {showParticipants ? (
-              <S.Card id="event-participants">
-                <S.ParticipantList>
-                  {event.participants.map((participant) => (
-                    <S.ParticipantItem key={participant.id}>
-                      <span>{participant.displayName}</span>
-                      <S.Pill>
-                        {participant.type === 'USER' ? 'Usuario' : 'Invitado'}
-                      </S.Pill>
-                    </S.ParticipantItem>
-                  ))}
-                </S.ParticipantList>
-              </S.Card>
-            ) : null}
-          </S.Collapsible>
-
-          <Section
-            title="Gastos"
-            description="Gastos registrados dentro del evento."
-          >
-            {event.expenses.length === 0 ? (
-              <S.EmptyState>
-                <S.CardTitle>Sin gastos todavia</S.CardTitle>
-                <S.MutedText>
-                  Carga el primer gasto y selecciona quien lo pago.
-                </S.MutedText>
-              </S.EmptyState>
-            ) : (
-              <S.CardGrid>
-                {event.expenses.map((expense) => (
-                  <S.Card key={expense.id}>
-                    <S.CardHeader>
-                      <S.CardTitle>{expense.title}</S.CardTitle>
-                      <S.MutedText>
-                        {expense.description || 'Sin descripcion'}
-                      </S.MutedText>
-                    </S.CardHeader>
-                    <S.Meta>
-                      <S.Pill>{formatAmount(expense.amount)}</S.Pill>
-                      <S.Pill>
-                        {getParticipantName(
-                          event.participants,
-                          expense.paidByParticipantId,
-                        )}
-                      </S.Pill>
-                    </S.Meta>
-                    <S.Actions>
-                      <LinkButton
-                        tone="neutral"
-                        to={`/eventos/${event.id}/gastos/${expense.id}/editar`}
-                      >
-                        Editar
-                      </LinkButton>
-                      <Button
-                        loading={deleteExpenseState.isLoading}
-                        size="sm"
-                        type="button"
-                        variant="tertiary"
-                        onClick={() => setExpenseToDelete(expense)}
-                      >
-                        Eliminar
-                      </Button>
-                    </S.Actions>
-                  </S.Card>
-                ))}
-              </S.CardGrid>
-            )}
-          </Section>
-
           <Section
             title="Liquidacion"
             action={
@@ -316,7 +241,9 @@ export function EventDetailPage() {
                   <S.SummaryItem>
                     <S.SummaryLabel>Estrategia</S.SummaryLabel>
                     <S.SummaryValue>
-                      {formatSettlementStrategy(calculateSettlementState.data.strategy)}
+                      {formatSettlementStrategy(
+                        calculateSettlementState.data.strategy,
+                      )}
                     </S.SummaryValue>
                   </S.SummaryItem>
                 </S.SummaryBar>
@@ -343,7 +270,7 @@ export function EventDetailPage() {
                   </S.ParticipantList>
                 )}
 
-                                <S.Collapsible>
+                <S.Collapsible>
                   <S.CollapsibleButton
                     aria-controls="event-settlement-balances"
                     aria-expanded={showSettlementBalances}
@@ -391,8 +318,6 @@ export function EventDetailPage() {
                   ) : null}
                 </S.Collapsible>
               </S.Card>
-
-              
             ) : (
               <S.EmptyState>
                 <S.CardTitle>Sin liquidacion calculada</S.CardTitle>
@@ -402,6 +327,120 @@ export function EventDetailPage() {
               </S.EmptyState>
             )}
           </Section>
+
+          <S.Collapsible>
+            <S.CollapsibleButton
+              aria-controls="event-expenses"
+              aria-expanded={showExpenses}
+              type="button"
+              onClick={() => setShowExpenses((current) => !current)}
+            >
+              <S.CollapsibleTitle>
+                <S.CollapsibleLabel>Gastos</S.CollapsibleLabel>
+                <S.CollapsibleHint>
+                  {showExpenses
+                    ? 'Ocultar gastos registrados'
+                    : `${event.expenses.length} gastos registrados`}
+                </S.CollapsibleHint>
+              </S.CollapsibleTitle>
+              <S.CollapsibleIcon $open={showExpenses} aria-hidden="true">
+                +
+              </S.CollapsibleIcon>
+            </S.CollapsibleButton>
+
+            {showExpenses ? (
+              event.expenses.length === 0 ? (
+                <S.EmptyState id="event-expenses">
+                  <S.CardTitle>Sin gastos todavia</S.CardTitle>
+                  <S.MutedText>
+                    Carga el primer gasto y selecciona quien lo pago.
+                  </S.MutedText>
+                </S.EmptyState>
+              ) : (
+                <S.CardGrid id="event-expenses">
+                  {event.expenses.map((expense) => (
+                    <S.Card key={expense.id}>
+                      <S.CardHeader>
+                        <S.CardTitle>{expense.title}</S.CardTitle>
+                        <S.MutedText>
+                          {expense.description || 'Sin descripcion'}
+                        </S.MutedText>
+                      </S.CardHeader>
+                      <S.Meta>
+                        <S.Pill>{formatAmount(expense.amount)}</S.Pill>
+                        <S.Pill>
+                          {getParticipantName(
+                            event.participants,
+                            expense.paidByParticipantId,
+                          )}
+                        </S.Pill>
+                      </S.Meta>
+                      <S.MutedText>
+                        Deben:{' '}
+                        {getOwedByLabel(
+                          expense.owedByParticipantIds,
+                          event.participants,
+                        )}
+                      </S.MutedText>
+                      <S.Actions>
+                        <LinkButton
+                          tone="neutral"
+                          to={`/eventos/${event.id}/gastos/${expense.id}/editar`}
+                        >
+                          Editar
+                        </LinkButton>
+                        <Button
+                          loading={deleteExpenseState.isLoading}
+                          size="sm"
+                          type="button"
+                          variant="tertiary"
+                          onClick={() => setExpenseToDelete(expense)}
+                        >
+                          Eliminar
+                        </Button>
+                      </S.Actions>
+                    </S.Card>
+                  ))}
+                </S.CardGrid>
+              )
+            ) : null}
+          </S.Collapsible>
+
+          <S.Collapsible>
+            <S.CollapsibleButton
+              aria-controls="event-participants"
+              aria-expanded={showParticipants}
+              type="button"
+              onClick={() => setShowParticipants((current) => !current)}
+            >
+              <S.CollapsibleTitle>
+                <S.CollapsibleLabel>Participantes</S.CollapsibleLabel>
+                <S.CollapsibleHint>
+                  {showParticipants
+                    ? 'Ocultar participantes'
+                    : 'Ver quienes forman parte del evento'}
+                </S.CollapsibleHint>
+              </S.CollapsibleTitle>
+              <S.CollapsibleIcon $open={showParticipants} aria-hidden="true">
+                +
+              </S.CollapsibleIcon>
+            </S.CollapsibleButton>
+
+            {showParticipants ? (
+              <S.Card id="event-participants">
+                <S.ParticipantList>
+                  {event.participants.map((participant) => (
+                    <S.ParticipantItem key={participant.id}>
+                      <span>{participant.displayName}</span>
+                      <S.Pill>
+                        {participant.type === 'USER' ? 'Usuario' : 'Invitado'}
+                      </S.Pill>
+                    </S.ParticipantItem>
+                  ))}
+                </S.ParticipantList>
+              </S.Card>
+            ) : null}
+          </S.Collapsible>
         </S.DetailColumn>
       </S.DetailGrid>
 

@@ -17,6 +17,7 @@ export type EventExpenseResponse = {
   description: string | null
   amount: string | number
   paidByParticipantId: string
+  owedByParticipantIds: string[]
 }
 
 export type EventSummaryResponse = {
@@ -50,6 +51,7 @@ export type CreateEventExpenseRequest = {
   description?: string | null
   amount: string | number
   paidByParticipantId: string
+  owedByParticipantIds: string[]
 }
 
 export type UpdateEventExpenseRequest = CreateEventExpenseRequest
@@ -100,4 +102,5 @@ export type EventExpenseFormValues = {
   description: string
   amount: string
   paidByParticipantId: string
+  owedByParticipantIds: string[]
 }

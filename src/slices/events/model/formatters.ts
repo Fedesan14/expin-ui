@@ -94,5 +94,6 @@ export function toEventExpenseRequest(
     description: values.description.trim() || null,
     amount: values.amount.replace(',', '.'),
     paidByParticipantId: values.paidByParticipantId,
+    owedByParticipantIds: values.owedByParticipantIds,
   }
 }
