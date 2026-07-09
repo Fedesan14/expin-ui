@@ -9,6 +9,7 @@ import type {
   EventSummaryResponse,
   UpdateEventExpenseRequest,
   UpdateEventRequest,
+  UserSearchResponse,
 } from '../model/types'
 
 type EventIdArg = {
@@ -23,8 +24,18 @@ type EventInviteArg = {
   inviteToken: string
 }
 
+type FindUserArg = {
+  identifier: string
+}
+
 export const eventsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+    findUserByIdentifier: builder.query<UserSearchResponse, FindUserArg>({
+      query: ({ identifier }) => ({
+        url: '/users',
+        params: { identifier },
+      }),
+    }),
     getEvents: builder.query<EventSummaryResponse[], void>({
       query: () => '/events',
       providesTags: (result) =>
@@ -143,6 +154,7 @@ export const {
   useCreateEventMutation,
   useDeleteEventExpenseMutation,
   useDeleteEventMutation,
+  useLazyFindUserByIdentifierQuery,
   useGetEventExpenseQuery,
   useGetEventQuery,
   useGetEventsQuery,

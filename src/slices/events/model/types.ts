@@ -11,6 +11,19 @@ export type EventParticipantResponse = {
   type: 'USER' | 'GUEST'
 }
 
+export type UserResponse = {
+  id: string
+  username: string
+  email: string
+}
+
+export type UserSearchResponse =
+  | UserResponse
+  | UserResponse[]
+  | {
+      content: UserResponse[]
+    }
+
 export type EventExpenseResponse = {
   id: string
   title: string
@@ -93,6 +106,9 @@ export type EventFormValues = {
   startDate: string
   endDate: string
   participants: {
+    userId?: string
+    username?: string
+    email?: string
     guestName: string
   }[]
 }

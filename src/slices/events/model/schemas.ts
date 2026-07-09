@@ -31,6 +31,9 @@ export const eventSchema: yup.ObjectSchema<EventFormValues> = yup.object({
   participants: yup
     .array(
       yup.object({
+        userId: yup.string().default(''),
+        username: yup.string().default(''),
+        email: yup.string().default(''),
         guestName: yup
           .string()
           .trim()
