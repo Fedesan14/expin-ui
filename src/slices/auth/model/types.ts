@@ -8,6 +8,7 @@ export type AuthUser = {
 export type LoginRequest = {
   identifier: string
   password: string
+  autologinHash?: string
 }
 
 export type LoginResponse = {
@@ -15,6 +16,11 @@ export type LoginResponse = {
   sessionTokenExpiresAt: string
   refreshToken: string
   refreshTokenExpiresAt: string
+}
+
+export type AutologinRequest = {
+  autologinHash: string
+  username: string
 }
 
 export type SignupRequest = {

@@ -1,5 +1,6 @@
 import { baseApi } from '../../../app/api/baseApi'
 import type {
+  AutologinRequest,
   LoginRequest,
   LoginResponse,
   SignupRequest,
@@ -21,7 +22,21 @@ export const authApi = baseApi.injectEndpoints({
         method: 'POST',
         headers: {
           Authorization: toBasicAuthorization(credentials),
+          ...(credentials.autologinHash
+            ? { 'X-Autologin-Hash': credentials.autologinHash }
+            : {}),
         },
+      }),
+      invalidatesTags: ['Auth'],
+    }),
+    autologin: builder.mutation<LoginResponse, AutologinRequest>({
+      query: ({ autologinHash, username }) => ({
+        url: '/auth/autologin',
+        method: 'POST',
+        headers: {
+          'X-Autologin-Hash': autologinHash,
+          "X-Username": username
+        }
       }),
       invalidatesTags: ['Auth'],
     }),
@@ -40,5 +55,9 @@ export const authApi = baseApi.injectEndpoints({
   }),
 })
 
-export const { useGetCurrentUserQuery, useLoginMutation, useSignupMutation } =
-  authApi
+export const {
+  useAutologinMutation,
+  useGetCurrentUserQuery,
+  useLoginMutation,
+  useSignupMutation,
+} = authApi

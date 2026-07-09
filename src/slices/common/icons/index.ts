@@ -1,4 +1,6 @@
 export { EventsIcon } from './EventsIcon'
+export { EyeIcon } from './EyeIcon'
+export { EyeOffIcon } from './EyeOffIcon'
 export { HistoryIcon } from './HistoryIcon'
 export { HomeIcon } from './HomeIcon'
 export { LogOutIcon } from './LogOutIcon'

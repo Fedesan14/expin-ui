@@ -11,7 +11,8 @@ export const baseApi = createApi({
       headers.set('Accept', 'application/json')
 
       const token = (getState() as RootState).auth.sessionToken
-      const isPublicAuthEndpoint = endpoint === 'login' || endpoint === 'signup'
+      const isPublicAuthEndpoint =
+        endpoint === 'login' || endpoint === 'signup' || endpoint === 'autologin'
 
       if (token && !isPublicAuthEndpoint && !headers.has('Authorization')) {
         headers.set('Authorization', `Bearer ${token}`)
