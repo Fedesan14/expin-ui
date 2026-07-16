@@ -25,6 +25,8 @@ import {
 } from '../../model/formatters'
 import type { EventExpenseResponse, EventSettlementResponse } from '../../model/types'
 import * as S from '../../components/EventControls/EventControls.styles'
+import Settlement from '../../components/Settlement/Settlement'
+import ExpenseCard from '../../components/ExpenseCard/ExpenseCard'
 
 type Message = {
   tone: 'danger' | 'success'
@@ -39,139 +41,9 @@ function getAbsoluteShareLink(shareLink: string) {
   return `${window.location.origin}${shareLink.startsWith('/') ? '' : '/'}${shareLink}`
 }
 
-function getOwedByLabel(
-  participants: EventExpenseResponse['owedByParticipantIds'],
-  eventParticipants: Parameters<typeof getParticipantName>[0],
-) {
-  if (participants.length === 0) {
-    return 'Sin deudores asignados'
-  }
 
-  return participants
-    .map((participantId) => getParticipantName(eventParticipants, participantId))
-    .join(', ')
-}
 
-const Settlement = (
-  {settlement, showSettlementBalances, setShowSettlementBalances}: 
-  { settlement?: EventSettlementResponse, showSettlementBalances: boolean, setShowSettlementBalances: Dispatch<SetStateAction<boolean>>}  
-) => {
-  return (
-    settlement ? (
-    <S.Card>
-      <S.SummaryBar>
-        <S.SummaryItem $tone="expense">
-          <S.SummaryLabel>Total</S.SummaryLabel>
-          <S.SummaryValue>
-            {formatAmount(settlement.totalAmount)}
-          </S.SummaryValue>
-        </S.SummaryItem>
-        <S.SummaryItem>
-          <S.SummaryLabel>Participantes</S.SummaryLabel>
-          <S.SummaryValue>
-            {settlement.participantCount}
-          </S.SummaryValue>
-        </S.SummaryItem>
-        <S.SummaryItem>
-          <S.SummaryLabel>Estrategia</S.SummaryLabel>
-          <S.SummaryValue>
-            {formatSettlementStrategy(
-              settlement.strategy,
-            )}
-          </S.SummaryValue>
-        </S.SummaryItem>
-      </S.SummaryBar>
 
-      <S.CardHeader>
-        <S.CardTitle>Transferencias sugeridas</S.CardTitle>
-      </S.CardHeader>
-      {settlement.transfers.length === 0 ? (
-        <S.EmptyState>
-          <S.CardTitle>Evento saldado</S.CardTitle>
-          <S.MutedText>No hay transferencias pendientes.</S.MutedText>
-        </S.EmptyState>
-      ) : (
-        <S.ParticipantList>
-          {settlement.transfers.map((transfer) => (
-            <S.TransferItem
-              key={`${transfer.fromParticipantId}-${transfer.toParticipantId}-${transfer.amount}`}
-            >
-              {transfer.fromDisplayName} debe transferir{' '}
-              <strong>{formatAmount(transfer.amount)}</strong> a{' '}
-              {transfer.toDisplayName}.
-            </S.TransferItem>
-          ))}
-        </S.ParticipantList>
-      )}
-
-      <S.Collapsible>
-        <S.CollapsibleButton
-          aria-controls="event-settlement-balances"
-          aria-expanded={showSettlementBalances}
-          type="button"
-          onClick={() =>
-            setShowSettlementBalances((current) => !current)
-          }
-        >
-          <S.CollapsibleTitle>
-            <S.CollapsibleLabel>Balances</S.CollapsibleLabel>
-            <S.CollapsibleHint>
-              {showSettlementBalances
-                ? 'Ocultar balances'
-                : 'Ver importes por participante'}
-            </S.CollapsibleHint>
-          </S.CollapsibleTitle>
-          <S.CollapsibleIcon
-            $open={showSettlementBalances}
-            aria-hidden="true"
-          >
-            +
-          </S.CollapsibleIcon>
-        </S.CollapsibleButton>
-
-        {showSettlementBalances ? (
-          <S.ParticipantList id="event-settlement-balances">
-            {settlement.balances.map((balance) => (
-              <S.BalanceItem key={balance.participantId}>
-                <S.BalanceName>{balance.displayName}</S.BalanceName>
-                <S.BalanceMetric>
-                  <S.BalanceMetricLabel>Pago</S.BalanceMetricLabel>
-                  {formatAmount(balance.paidAmount)}
-                </S.BalanceMetric>
-                <S.BalanceMetric>
-                  <S.BalanceMetricLabel>Debe</S.BalanceMetricLabel>
-                  {formatAmount(balance.owedAmount)}
-                </S.BalanceMetric>
-                <S.BalanceMetric>
-                  <S.BalanceMetricLabel>Balance</S.BalanceMetricLabel>
-                  <S.BalanceAmount
-                    $tone={
-                      balance.balance > 0
-                        ? 'positive'
-                        : balance.balance < 0
-                          ? 'negative'
-                          : 'neutral'
-                    }
-                  >
-                    {formatAmount(balance.balance)}
-                  </S.BalanceAmount>
-                </S.BalanceMetric>
-              </S.BalanceItem>
-            ))}
-          </S.ParticipantList>
-        ) : null}
-      </S.Collapsible>
-    </S.Card>
-    ) : (
-      <S.EmptyState>
-        <S.CardTitle>Sin liquidacion calculada</S.CardTitle>
-        <S.MutedText>
-          Ejecuta el calculo para ver balances y transferencias sugeridas.
-        </S.MutedText>
-      </S.EmptyState>
-    )
-  )
-}
 
 export function EventDetailPage() {
   const navigate = useNavigate()
@@ -190,7 +62,7 @@ export function EventDetailPage() {
   const [calculateSettlement, calculateSettlementState] = useCalculateEventSettlementMutation()
   const [deleteEvent, deleteEventState] = useDeleteEventMutation()
   const [deleteExpense, deleteExpenseState] = useDeleteEventExpenseMutation()
-  const [closeEvent, closeEventState] = useCloseEventMutation();
+  const [closeEvent] = useCloseEventMutation();
 
   if (!eventId) {
     return <Navigate to="/eventos" replace />
@@ -319,8 +191,8 @@ export function EventDetailPage() {
     return <Navigate to="/eventos" replace />
   }
 
-  return (
-    <Page maxWidth="wide">
+  const EventDetailHeader = () => {
+    return (
       <S.CompactHeader>
         <S.CompactTitleRow>
           <S.DetailTitle>{event.title}</S.DetailTitle>
@@ -338,7 +210,12 @@ export function EventDetailPage() {
           <S.DescriptionText>{event.description}</S.DescriptionText>
         ) : null}
       </S.CompactHeader>
+    )
+  }
 
+  return (
+    <Page maxWidth="wide">
+      <EventDetailHeader />
       {message ? <Alert tone={message.tone}>{message.text}</Alert> : null}
 
       <S.DetailGrid>
@@ -400,49 +277,12 @@ export function EventDetailPage() {
               ) : (
                 <S.CardGrid id="event-expenses">
                   {event.expenses.map((expense) => (
-                    <S.Card key={expense.id}>
-                      <S.CardHeader>
-                        <S.CardTitle>{expense.title}</S.CardTitle>
-                        <S.MutedText>
-                          {expense.description || 'Sin descripcion'}
-                        </S.MutedText>
-                      </S.CardHeader>
-                      <S.Meta>
-                        <S.Pill $tone="expense">
-                          {formatAmount(expense.amount)}
-                        </S.Pill>
-                        <S.Pill>
-                          {getParticipantName(
-                            event.participants,
-                            expense.paidByParticipantId,
-                          )}
-                        </S.Pill>
-                      </S.Meta>
-                      <S.MutedText>
-                        Deben:{' '}
-                        {getOwedByLabel(
-                          expense.owedByParticipantIds,
-                          event.participants,
-                        )}
-                      </S.MutedText>
-                      <S.Actions>
-                        <LinkButton
-                          tone="neutral"
-                          to={`/eventos/${event.id}/gastos/${expense.id}/editar`}
-                        >
-                          Editar
-                        </LinkButton>
-                        <Button
-                          loading={deleteExpenseState.isLoading}
-                          size="sm"
-                          type="button"
-                          variant="tertiary"
-                          onClick={() => setExpenseToDelete(expense)}
-                        >
-                          Eliminar
-                        </Button>
-                      </S.Actions>
-                    </S.Card>
+                    <ExpenseCard 
+                      event={event} 
+                      expense={expense} 
+                      isLoadingDelete={deleteEventState.isLoading} 
+                      setExpenseToDelete={setExpenseToDelete} 
+                    />
                   ))}
                 </S.CardGrid>
               )
