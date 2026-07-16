@@ -3,7 +3,7 @@ import { Button } from '../../../common/components/Button'
 import { LinkButton } from '../../../common/components/LinkButton'
 import * as S from '../../components/EventControls/EventControls.styles'
 import { formatAmount, getParticipantName } from '../../model/formatters'
-import type { EventExpenseResponse, EventParticipantResponse, EventResponse } from '../../model/types'
+import type { EventExpenseResponse, EventResponse } from '../../model/types'
 
 function getOwedByLabel(
   participants: EventExpenseResponse['owedByParticipantIds'],

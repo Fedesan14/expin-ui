@@ -1,4 +1,4 @@
-import { useState, type Dispatch, type SetStateAction } from 'react'
+import { useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { Alert } from '../../../common/components/Alert'
 import { Button } from '../../../common/components/Button'
@@ -20,10 +20,8 @@ import { getApiStatus, getEventsErrorMessage } from '../../model/apiErrors'
 import {
   formatAmount,
   formatDateRange,
-  formatSettlementStrategy,
-  getParticipantName,
 } from '../../model/formatters'
-import type { EventExpenseResponse, EventSettlementResponse } from '../../model/types'
+import type { EventExpenseResponse } from '../../model/types'
 import * as S from '../../components/EventControls/EventControls.styles'
 import Settlement from '../../components/Settlement/Settlement'
 import ExpenseCard from '../../components/ExpenseCard/ExpenseCard'
