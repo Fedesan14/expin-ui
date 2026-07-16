@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type Dispatch, type SetStateAction } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { Alert } from '../../../common/components/Alert'
 import { Button } from '../../../common/components/Button'
@@ -11,6 +11,7 @@ import { Spinner } from '../../../common/components/Spinner'
 import { useToast } from '../../../common/components/Toast'
 import {
   useCalculateEventSettlementMutation,
+  useCloseEventMutation,
   useDeleteEventExpenseMutation,
   useDeleteEventMutation,
   useGetEventQuery,
@@ -22,7 +23,7 @@ import {
   formatSettlementStrategy,
   getParticipantName,
 } from '../../model/formatters'
-import type { EventExpenseResponse } from '../../model/types'
+import type { EventExpenseResponse, EventSettlementResponse } from '../../model/types'
 import * as S from '../../components/EventControls/EventControls.styles'
 
 type Message = {
@@ -51,6 +52,127 @@ function getOwedByLabel(
     .join(', ')
 }
 
+const Settlement = (
+  {settlement, showSettlementBalances, setShowSettlementBalances}: 
+  { settlement?: EventSettlementResponse, showSettlementBalances: boolean, setShowSettlementBalances: Dispatch<SetStateAction<boolean>>}  
+) => {
+  return (
+    settlement ? (
+    <S.Card>
+      <S.SummaryBar>
+        <S.SummaryItem $tone="expense">
+          <S.SummaryLabel>Total</S.SummaryLabel>
+          <S.SummaryValue>
+            {formatAmount(settlement.totalAmount)}
+          </S.SummaryValue>
+        </S.SummaryItem>
+        <S.SummaryItem>
+          <S.SummaryLabel>Participantes</S.SummaryLabel>
+          <S.SummaryValue>
+            {settlement.participantCount}
+          </S.SummaryValue>
+        </S.SummaryItem>
+        <S.SummaryItem>
+          <S.SummaryLabel>Estrategia</S.SummaryLabel>
+          <S.SummaryValue>
+            {formatSettlementStrategy(
+              settlement.strategy,
+            )}
+          </S.SummaryValue>
+        </S.SummaryItem>
+      </S.SummaryBar>
+
+      <S.CardHeader>
+        <S.CardTitle>Transferencias sugeridas</S.CardTitle>
+      </S.CardHeader>
+      {settlement.transfers.length === 0 ? (
+        <S.EmptyState>
+          <S.CardTitle>Evento saldado</S.CardTitle>
+          <S.MutedText>No hay transferencias pendientes.</S.MutedText>
+        </S.EmptyState>
+      ) : (
+        <S.ParticipantList>
+          {settlement.transfers.map((transfer) => (
+            <S.TransferItem
+              key={`${transfer.fromParticipantId}-${transfer.toParticipantId}-${transfer.amount}`}
+            >
+              {transfer.fromDisplayName} debe transferir{' '}
+              <strong>{formatAmount(transfer.amount)}</strong> a{' '}
+              {transfer.toDisplayName}.
+            </S.TransferItem>
+          ))}
+        </S.ParticipantList>
+      )}
+
+      <S.Collapsible>
+        <S.CollapsibleButton
+          aria-controls="event-settlement-balances"
+          aria-expanded={showSettlementBalances}
+          type="button"
+          onClick={() =>
+            setShowSettlementBalances((current) => !current)
+          }
+        >
+          <S.CollapsibleTitle>
+            <S.CollapsibleLabel>Balances</S.CollapsibleLabel>
+            <S.CollapsibleHint>
+              {showSettlementBalances
+                ? 'Ocultar balances'
+                : 'Ver importes por participante'}
+            </S.CollapsibleHint>
+          </S.CollapsibleTitle>
+          <S.CollapsibleIcon
+            $open={showSettlementBalances}
+            aria-hidden="true"
+          >
+            +
+          </S.CollapsibleIcon>
+        </S.CollapsibleButton>
+
+        {showSettlementBalances ? (
+          <S.ParticipantList id="event-settlement-balances">
+            {settlement.balances.map((balance) => (
+              <S.BalanceItem key={balance.participantId}>
+                <S.BalanceName>{balance.displayName}</S.BalanceName>
+                <S.BalanceMetric>
+                  <S.BalanceMetricLabel>Pago</S.BalanceMetricLabel>
+                  {formatAmount(balance.paidAmount)}
+                </S.BalanceMetric>
+                <S.BalanceMetric>
+                  <S.BalanceMetricLabel>Debe</S.BalanceMetricLabel>
+                  {formatAmount(balance.owedAmount)}
+                </S.BalanceMetric>
+                <S.BalanceMetric>
+                  <S.BalanceMetricLabel>Balance</S.BalanceMetricLabel>
+                  <S.BalanceAmount
+                    $tone={
+                      balance.balance > 0
+                        ? 'positive'
+                        : balance.balance < 0
+                          ? 'negative'
+                          : 'neutral'
+                    }
+                  >
+                    {formatAmount(balance.balance)}
+                  </S.BalanceAmount>
+                </S.BalanceMetric>
+              </S.BalanceItem>
+            ))}
+          </S.ParticipantList>
+        ) : null}
+      </S.Collapsible>
+    </S.Card>
+    ) : (
+      <S.EmptyState>
+        <S.CardTitle>Sin liquidacion calculada</S.CardTitle>
+        <S.MutedText>
+          Ejecuta el calculo para ver balances y transferencias sugeridas.
+        </S.MutedText>
+      </S.EmptyState>
+    )
+  )
+}
+
 export function EventDetailPage() {
   const navigate = useNavigate()
   const { eventId } = useParams()
@@ -65,10 +187,10 @@ export function EventDetailPage() {
     { eventId: eventId ?? '' },
     { skip: !eventId },
   )
-  const [calculateSettlement, calculateSettlementState] =
-    useCalculateEventSettlementMutation()
+  const [calculateSettlement, calculateSettlementState] = useCalculateEventSettlementMutation()
   const [deleteEvent, deleteEventState] = useDeleteEventMutation()
   const [deleteExpense, deleteExpenseState] = useDeleteEventExpenseMutation()
+  const [closeEvent, closeEventState] = useCloseEventMutation();
 
   if (!eventId) {
     return <Navigate to="/eventos" replace />
@@ -139,6 +261,23 @@ export function EventDetailPage() {
     }).catch(() => undefined)
   }
 
+  const handleCompleteEvent = () => {
+    if (!window.confirm('Cerrar evento? No podras agregar nuevos gastos.')) {
+      return
+    }    
+
+    setMessage(null)
+    closeEvent({eventId})
+      .unwrap()
+      .then(() => {
+        setExpenseToDelete(null)
+        setMessage({ tone: 'success', text: 'Evento cerrado.' })
+      })
+      .catch((requestError) => {
+        setMessage({ tone: 'danger', text: getEventsErrorMessage(requestError) })
+      })
+  }
+
   if (isLoading) {
     return (
       <Page maxWidth="wide">
@@ -207,7 +346,7 @@ export function EventDetailPage() {
           <Section
             title="Liquidacion"
             action={
-              <Button
+              event.status === 'COMPLETED' ? null : <Button
                 loading={calculateSettlementState.isLoading}
                 size="sm"
                 type="button"
@@ -223,119 +362,11 @@ export function EventDetailPage() {
               </Alert>
             ) : null}
 
-            {calculateSettlementState.data ? (
-              <S.Card>
-                <S.SummaryBar>
-                  <S.SummaryItem $tone="expense">
-                    <S.SummaryLabel>Total</S.SummaryLabel>
-                    <S.SummaryValue>
-                      {formatAmount(calculateSettlementState.data.totalAmount)}
-                    </S.SummaryValue>
-                  </S.SummaryItem>
-                  <S.SummaryItem>
-                    <S.SummaryLabel>Participantes</S.SummaryLabel>
-                    <S.SummaryValue>
-                      {calculateSettlementState.data.participantCount}
-                    </S.SummaryValue>
-                  </S.SummaryItem>
-                  <S.SummaryItem>
-                    <S.SummaryLabel>Estrategia</S.SummaryLabel>
-                    <S.SummaryValue>
-                      {formatSettlementStrategy(
-                        calculateSettlementState.data.strategy,
-                      )}
-                    </S.SummaryValue>
-                  </S.SummaryItem>
-                </S.SummaryBar>
-
-                <S.CardHeader>
-                  <S.CardTitle>Transferencias sugeridas</S.CardTitle>
-                </S.CardHeader>
-                {calculateSettlementState.data.transfers.length === 0 ? (
-                  <S.EmptyState>
-                    <S.CardTitle>Evento saldado</S.CardTitle>
-                    <S.MutedText>No hay transferencias pendientes.</S.MutedText>
-                  </S.EmptyState>
-                ) : (
-                  <S.ParticipantList>
-                    {calculateSettlementState.data.transfers.map((transfer) => (
-                      <S.TransferItem
-                        key={`${transfer.fromParticipantId}-${transfer.toParticipantId}-${transfer.amount}`}
-                      >
-                        {transfer.fromDisplayName} debe transferir{' '}
-                        <strong>{formatAmount(transfer.amount)}</strong> a{' '}
-                        {transfer.toDisplayName}.
-                      </S.TransferItem>
-                    ))}
-                  </S.ParticipantList>
-                )}
-
-                <S.Collapsible>
-                  <S.CollapsibleButton
-                    aria-controls="event-settlement-balances"
-                    aria-expanded={showSettlementBalances}
-                    type="button"
-                    onClick={() =>
-                      setShowSettlementBalances((current) => !current)
-                    }
-                  >
-                    <S.CollapsibleTitle>
-                      <S.CollapsibleLabel>Balances</S.CollapsibleLabel>
-                      <S.CollapsibleHint>
-                        {showSettlementBalances
-                          ? 'Ocultar balances'
-                          : 'Ver importes por participante'}
-                      </S.CollapsibleHint>
-                    </S.CollapsibleTitle>
-                    <S.CollapsibleIcon
-                      $open={showSettlementBalances}
-                      aria-hidden="true"
-                    >
-                      +
-                    </S.CollapsibleIcon>
-                  </S.CollapsibleButton>
-
-                  {showSettlementBalances ? (
-                    <S.ParticipantList id="event-settlement-balances">
-                      {calculateSettlementState.data.balances.map((balance) => (
-                        <S.BalanceItem key={balance.participantId}>
-                          <S.BalanceName>{balance.displayName}</S.BalanceName>
-                          <S.BalanceMetric>
-                            <S.BalanceMetricLabel>Pago</S.BalanceMetricLabel>
-                            {formatAmount(balance.paidAmount)}
-                          </S.BalanceMetric>
-                          <S.BalanceMetric>
-                            <S.BalanceMetricLabel>Debe</S.BalanceMetricLabel>
-                            {formatAmount(balance.owedAmount)}
-                          </S.BalanceMetric>
-                          <S.BalanceMetric>
-                            <S.BalanceMetricLabel>Balance</S.BalanceMetricLabel>
-                            <S.BalanceAmount
-                              $tone={
-                                balance.balance > 0
-                                  ? 'positive'
-                                  : balance.balance < 0
-                                    ? 'negative'
-                                    : 'neutral'
-                              }
-                            >
-                              {formatAmount(balance.balance)}
-                            </S.BalanceAmount>
-                          </S.BalanceMetric>
-                        </S.BalanceItem>
-                      ))}
-                    </S.ParticipantList>
-                  ) : null}
-                </S.Collapsible>
-              </S.Card>
-            ) : (
-              <S.EmptyState>
-                <S.CardTitle>Sin liquidacion calculada</S.CardTitle>
-                <S.MutedText>
-                  Ejecuta el calculo para ver balances y transferencias sugeridas.
-                </S.MutedText>
-              </S.EmptyState>
-            )}
+              <Settlement 
+                settlement={calculateSettlementState.data || event.eventSettlementResponse} 
+                showSettlementBalances={showSettlementBalances} 
+                setShowSettlementBalances={setShowSettlementBalances} 
+              />
           </Section>
 
           <S.Collapsible>
@@ -463,9 +494,16 @@ export function EventDetailPage() {
         <S.FloatingActionButton type="button" onClick={handleCopyShareLink}>
           Compartir
         </S.FloatingActionButton>
-        <S.FloatingActionLink to={`/eventos/${event.id}/editar`}>
-          Editar
-        </S.FloatingActionLink>
+        { (event.status !== 'COMPLETED') && (
+          <S.FloatingActionButton
+            disabled={deleteEventState.isLoading}
+            type="button"
+            onClick={handleCompleteEvent}
+          >
+            Completar
+          </S.FloatingActionButton>
+        )
+        }
         <S.FloatingActionButton
           $danger
           disabled={deleteEventState.isLoading}

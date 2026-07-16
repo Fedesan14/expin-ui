@@ -35,9 +35,11 @@ function EventCard({ event }: { event: EventSummaryResponse }) {
       </S.EventCardBody>
       <S.CardActions aria-label={`Acciones para ${event.title}`}>
         <S.CardActionLink to={`/eventos/${event.id}`}>Abrir</S.CardActionLink>
-        <S.CardActionLink to={`/eventos/${event.id}/editar`}>
-          Editar
-        </S.CardActionLink>
+        { (event.status !== 'COMPLETED') &&  
+          <S.CardActionLink to={`/eventos/${event.id}/editar`}>
+            Editar
+          </S.CardActionLink>
+        }
       </S.CardActions>
     </S.EventCardLayout>
   )
@@ -45,8 +47,7 @@ function EventCard({ event }: { event: EventSummaryResponse }) {
 
 export function EventsPage() {
   const navigate = useNavigate()
-  const { data: events = [], error, isFetching, isLoading, refetch } =
-    useGetEventsQuery()
+  const { data: events = [], error, isFetching, isLoading, refetch } = useGetEventsQuery()
 
   return (
     <Page maxWidth="wide">
