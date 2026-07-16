@@ -145,6 +145,16 @@ export const eventsApi = baseApi.injectEndpoints({
         body,
       }),
     }),
+    closeEvent: builder.mutation<EventResponse, EventIdArg>({
+      query: ({eventId}) => ({
+        url: `/events/${eventId}/close_event`,
+        method: 'POST'
+      }),
+      invalidatesTags: (_result, _error, { eventId }) => [
+        { type: 'Events', id: eventId },
+        { type: 'Events' }
+      ],
+    })
   }),
 })
 
@@ -161,4 +171,5 @@ export const {
   useJoinEventByInviteTokenMutation,
   useUpdateEventExpenseMutation,
   useUpdateEventMutation,
+  useCloseEventMutation
 } = eventsApi

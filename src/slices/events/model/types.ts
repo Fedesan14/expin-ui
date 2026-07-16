@@ -42,11 +42,13 @@ export type EventSummaryResponse = {
   shareLink: string
   ownerId: string
   participantsCount: number
+  status: string
 }
 
 export type EventResponse = EventSummaryResponse & {
   participants: EventParticipantResponse[]
   expenses: EventExpenseResponse[]
+  eventSettlementResponse: EventSettlementResponse
 }
 
 export type CreateEventRequest = {
