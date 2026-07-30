@@ -241,6 +241,8 @@ export function EventDetailPage() {
                 settlement={calculateSettlementState.data || event.eventSettlementResponse} 
                 showSettlementBalances={showSettlementBalances} 
                 setShowSettlementBalances={setShowSettlementBalances} 
+                eventStatus={event.status}
+                eventId={eventId}
               />
           </Section>
 

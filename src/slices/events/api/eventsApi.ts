@@ -154,6 +154,24 @@ export const eventsApi = baseApi.injectEndpoints({
         { type: 'Events', id: eventId },
         { type: 'Events' }
       ],
+    }),
+    payTransfer: builder.mutation<void, { eventId: string, transferId: string }>({
+      query: ({eventId, transferId}) => ({
+        url: `/events/${eventId}/transfer/${transferId}/pay`,
+        method: 'POST'
+      }),
+      invalidatesTags: (_result, _error, { eventId }) => [
+        { type: 'Events', id: eventId }
+      ],
+    }),
+    unpaidTransfer: builder.mutation<void, { eventId: string, transferId: string }>({
+      query: ({eventId, transferId}) => ({
+        url: `/events/${eventId}/transfer/${transferId}/unpaid`,
+        method: 'POST'
+      }),
+      invalidatesTags: (_result, _error, { eventId }) => [
+        { type: 'Events', id: eventId }
+      ],
     })
   }),
 })
@@ -171,5 +189,7 @@ export const {
   useJoinEventByInviteTokenMutation,
   useUpdateEventExpenseMutation,
   useUpdateEventMutation,
-  useCloseEventMutation
+  useCloseEventMutation,
+  usePayTransferMutation,
+  useUnpaidTransferMutation
 } = eventsApi

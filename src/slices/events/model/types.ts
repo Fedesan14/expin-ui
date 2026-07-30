@@ -91,6 +91,8 @@ export type EventTransferResponse = {
   toParticipantId: string
   toDisplayName: string
   amount: number
+  paid: boolean
+  id: string
 }
 
 export type EventSettlementResponse = {

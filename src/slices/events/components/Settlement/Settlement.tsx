@@ -2,11 +2,27 @@ import type { Dispatch, SetStateAction } from 'react'
 import * as S from '../../components/EventControls/EventControls.styles'
 import type { EventSettlementResponse } from '../../model/types'
 import { formatAmount, formatSettlementStrategy } from '../../model/formatters'
+import { usePayTransferMutation, useUnpaidTransferMutation } from '../../api/eventsApi'
 
-const Settlement = (
-  {settlement, showSettlementBalances, setShowSettlementBalances}: 
-  { settlement?: EventSettlementResponse, showSettlementBalances: boolean, setShowSettlementBalances: Dispatch<SetStateAction<boolean>>}  
-) => {
+interface SettlementProp { 
+  settlement?: EventSettlementResponse,
+  showSettlementBalances: boolean, 
+  setShowSettlementBalances: Dispatch<SetStateAction<boolean>>, 
+  eventStatus: string,
+  eventId: string
+}
+
+const Settlement = ({
+  settlement, 
+  showSettlementBalances, 
+  setShowSettlementBalances, 
+  eventStatus,
+  eventId
+}: SettlementProp ) => {
+
+  const [ payTransfer ] = usePayTransferMutation()
+  const [ unpaidTransfer ] = useUnpaidTransferMutation()
+
   return (
     settlement ? (
     <S.Card>
@@ -44,13 +60,30 @@ const Settlement = (
       ) : (
         <S.ParticipantList>
           {settlement.transfers.map((transfer) => (
-            <S.TransferItem
-              key={`${transfer.fromParticipantId}-${transfer.toParticipantId}-${transfer.amount}`}
-            >
-              {transfer.fromDisplayName} debe transferir{' '}
-              <strong>{formatAmount(transfer.amount)}</strong> a{' '}
-              {transfer.toDisplayName}.
-            </S.TransferItem>
+            <S.TransferItemContainer key={transfer.id}>
+              <S.TransferItem
+                key={`${transfer.fromParticipantId}-${transfer.toParticipantId}-${transfer.amount}`}
+              >
+                {transfer.fromDisplayName} debe transferir{' '}
+                <strong>{formatAmount(transfer.amount)}</strong> a{' '}
+                {transfer.toDisplayName}.
+              </S.TransferItem>
+              { eventStatus === 'COMPLETED' && 
+                <S.TransferItemPaid 
+                  type='checkbox'
+                  checked={transfer.paid}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+
+                        if (checked) {
+                          payTransfer({ eventId, transferId: transfer.id })
+                        } else {
+                          unpaidTransfer({ eventId, transferId: transfer.id })
+                        }
+                      }}
+                />
+              }
+            </S.TransferItemContainer>
           ))}
         </S.ParticipantList>
       )}

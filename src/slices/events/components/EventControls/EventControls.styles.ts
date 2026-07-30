@@ -417,14 +417,60 @@ export const BalanceMetricLabel = styled.span`
   font-weight: ${({ theme }) => theme.fontWeights.semibold};
 `
 
-export const TransferItem = styled.li`
+export const TransferItemContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  background: ${({ theme }) => theme.colors.domain.transferContainer};
   border: 1px solid ${({ theme }) => theme.colors.domain.transfer};
   border-radius: ${({ theme }) => theme.radii.md};
-  background: ${({ theme }) => theme.colors.domain.transferContainer};
+  justify-content: space-around;
+  align-items: center;
+`
+
+export const TransferItem = styled.li`
   color: ${({ theme }) => theme.colors.domain.onTransferContainer};
   font-size: ${({ theme }) => theme.fontSizes.sm};
   line-height: ${({ theme }) => theme.lineHeights.normal};
   padding: ${({ theme }) => theme.space['3']};
+`
+
+export const TransferItemPaid = styled.input`
+    appearance: none;
+  -webkit-appearance: none;
+
+  width: 22px;
+  height: 22px;
+  border: 2px solid #cbd5e1;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: #22c55e;
+  }
+
+  &:checked {
+    background: #22c55e;
+    border-color: #22c55e;
+  }
+
+  &:checked::after {
+    content: "✓";
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    width: 100%;
+    height: 100%;
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(34, 197, 94, 0.3);
+    outline-offset: 2px;
+  }
 `
 
 export const DetailGrid = styled.div`
