@@ -19,7 +19,8 @@ Expin is a SuperApp with several finance-oriented modules. Current planned modul
 - `react-hook-form` owns form state and submit handling.
 - Yup schemas, connected through `@hookform/resolvers`, own form validation.
 - PWA metadata lives in `public/manifest.webmanifest`.
-- The app registers `public/service-worker.js` from `src/app/pwa/registerServiceWorker.ts` outside development.
+- The app registers the generated `/service-worker.js` through `src/app/pwa/AppUpdateProvider.tsx` outside development.
+- The production build generates `dist/service-worker.js` from `service-worker.template.js`; `package.json` supplies the user-facing app version and each build gets a unique build id for update detection and cache isolation.
 - RTK Query is the global remote-state layer and HTTP client.
 - `styled-components` owns component styling and the application theme.
 - Shared visual tokens live in `src/app/theme/theme.ts`.
@@ -142,6 +143,8 @@ Rules:
 - `src/app/theme/theme.ts` includes compatibility tokens for the initial app (`spacing`, `fontSizes.xxl`, `shadows.soft`) plus expanded design-system tokens (`space`, `fontWeights`, `lineHeights`, `sizes`, `zIndex`, `breakpoints`, `transitions`, and `media` helpers).
 - Shared reusable UI primitives exist under `src/slices/common/components`, including button, text input, password input, form field, layout, navigation, feedback, overlay, badge, spinner, and status components.
 - Cross-cutting transient notifications use the shared Toast provider and `useToast` hook from `src/slices/common/components/Toast`; mount stays in `AppProviders`.
+- PWA update state is owned by `src/app/pwa/AppUpdateProvider.tsx`. A newly installed service worker must remain waiting until the global `AppUpdatePrompt` sends `SKIP_WAITING`; activation then reloads the app once through `controllerchange`.
+- Production must serve `service-worker.js` without caching, `index.html` with revalidation, and Vite hashed assets with long-lived immutable caching.
 - Shared reusable SVG icons exist under `src/slices/common/icons`.
 - Current auth pages use the shared `FormField`, `TextInput`, `PasswordInput`, `Button`, `LinkButton`, `Alert`, and `Page` primitives instead of page-local input/button styling.
 - Initial routes exist for `/`, `/login`, `/registro`, `/home`, `/historial`, `/eventos`, and `/auth`.
