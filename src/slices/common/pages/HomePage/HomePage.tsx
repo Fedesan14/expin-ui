@@ -1,3 +1,4 @@
+import { useAppUpdate } from '../../../../app/pwa/useAppUpdate'
 import { FeatureCard } from '../../components/FeatureCard'
 import { Page } from '../../components/Page'
 import { PageHeader } from '../../components/PageHeader'
@@ -5,6 +6,8 @@ import { Section } from '../../components/Section'
 import * as S from './HomePage.styles'
 
 export function HomePage() {
+  const { currentVersion } = useAppUpdate()
+
   return (
     <Page>
       <PageHeader
@@ -45,6 +48,10 @@ export function HomePage() {
           />
         </S.FeatureGrid>
       </Section>
+
+      <S.Footer>
+        <S.Version>Versión {currentVersion}</S.Version>
+      </S.Footer>
     </Page>
   )
 }
